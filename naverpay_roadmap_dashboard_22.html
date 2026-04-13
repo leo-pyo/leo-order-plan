@@ -188,6 +188,7 @@
     <div class="th">
       <button class="tb active" onclick="switchTab('list',this)">과제 목록</button>
       <button class="tb" onclick="switchTab('timeline',this)">월별 타임라인</button>
+      <button class="tb" onclick="switchTab('schedule',this)">일정 관리</button>
     </div>
 
     <!-- 목록 탭 -->
@@ -235,6 +236,11 @@
         <span style="font-size:11px;color:var(--red);margin-left:6px" id="today-label">│ 오늘</span>
       </div>
       <div class="tlw" id="tl-content"></div>
+    </div>
+
+    <!-- 일정 관리 탭 -->
+    <div id="tab-schedule" style="display:none">
+      <div id="schedule-content"></div>
     </div>
   </div>
 </main>
@@ -305,7 +311,14 @@ function switchTab(tab,el){
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));el.classList.add('active');
   document.getElementById('tab-list').style.display=tab==='list'?'':'none';
   document.getElementById('tab-timeline').style.display=tab==='timeline'?'':'none';
+  document.getElementById('tab-schedule').style.display=tab==='schedule'?'':'none';
   if(tab==='timeline') renderTimeline(); // 항상 최신 tasks 데이터로 재렌더
+  if(tab==='schedule') renderScheduleMgmt();
+}
+
+function refreshOpenTabs(){
+  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+  if(document.getElementById('tab-schedule').style.display!=='none') renderScheduleMgmt();
 }
 
 // ── 단계 라벨 헬퍼 ───────────────────────────────────────
@@ -763,6 +776,45 @@ function renderTimeline(){
     `<table class="tlt"><thead>${yrH}${moH}</thead><tbody>${body}</tbody></table>`;
 }
 
+// ── 일정 관리 렌더 ─────────────────────────────────────────
+function renderScheduleMgmt(){
+  const groups=['사업기획','서비스기획','하반기'];
+  let html='';
+
+  groups.forEach(g=>{
+    const rows = tasks.filter(t=>t.group===g);
+    if(!rows.length) return;
+    html += `<div class="sg-group">
+      <div class="sg-title"><span>${GL[g]}</span><span class="sg-badge">${rows.length}개</span></div>
+      <div class="tt-wrap">
+      <table class="tt" style="min-width:980px">
+        <colgroup><col style="width:360px"><col></colgroup>
+        <thead>
+          <tr>
+            <th>과제명</th>
+            <th>일정 관리 메모</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(t=>`<tr>
+            <td style="padding:8px 12px;font-size:13px;font-weight:500;color:var(--text1)">${t.name}</td>
+            <td style="padding:6px 10px">
+              <input class="tn" style="font-size:12px;font-weight:400;color:var(--text2)"
+                value="${(t.scheduleNote||'').replace(/"/g,'&quot;')}"
+                placeholder="일정 관련 텍스트 입력..."
+                oninput="saveScheduleNote(${t.id}, this.value)">
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      </div>
+    </div>`;
+  });
+
+  if(!html) html = '<div class="empty">표시할 과제가 없습니다.</div>';
+  document.getElementById('schedule-content').innerHTML = html;
+}
+
 // ── 담당자 드롭다운 ─────────────────────────────────────────
 function openOwnerDd(e, tid){
   e.stopPropagation();
@@ -779,7 +831,7 @@ function setOwner(tid, owner){
   document.querySelectorAll('.owner-dd.open').forEach(d=>d.classList.remove('open'));
   fillOwners();
   renderList();
-  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+  refreshOpenTabs();
 }
 
 function addOwnerAndSet(tid){
@@ -810,7 +862,7 @@ function editOwnerName(oldName){
   
   fillOwners();
   renderList();
-  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+  refreshOpenTabs();
 }
 
 function deleteOwnerName(name){
@@ -821,7 +873,7 @@ function deleteOwnerName(name){
   customOwners = customOwners.filter(o=>o !== name);
   fillOwners();
   renderList();
-  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+  refreshOpenTabs();
 }
 
 // ── 비고 수정 ─────────────────────────────────────────────────
@@ -831,6 +883,12 @@ function saveMemo(tid, val){
   t.memo = val;
 }
 
+function saveScheduleNote(tid, val){
+  const t = tasks.find(x=>x.id===tid);
+  if(!t) return;
+  t.scheduleNote = val;
+}
+
 // ── 과제명 수정 ───────────────────────────────────────────────
 function saveName(tid, val){
   const t = tasks.find(x=>x.id===tid);
@@ -838,8 +896,7 @@ function saveName(tid, val){
   const newName = val.trim();
   if(!newName) return;
   t.name = newName;
-  // 타임라인 즉시 갱신
-  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+  refreshOpenTabs();
 }
 
 // ── 상태 드롭다운 ────────────────────────────────────────────
@@ -858,7 +915,7 @@ function setStatus(tid, status){
   document.querySelectorAll('.status-dd.open').forEach(d=>d.classList.remove('open'));
   renderSummary();
   renderList();
-  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+  refreshOpenTabs();
 }
 
 // ── 배포 일자 수정 ───────────────────────────────────────────
@@ -866,7 +923,7 @@ function saveOpenDate(tid, val){
   const t = tasks.find(x=>x.id===tid);
   if(!t) return;
   t.openDate = val.trim();
-  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+  refreshOpenTabs();
 }
 
 // ── 목표일정 수정 ──────────────────────────────────────────
@@ -890,7 +947,7 @@ function saveTarget(tid){
   if(val!==undefined) t.target=val||'미정';
   closeAllDropdowns();
   renderList();
-  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+  refreshOpenTabs();
 }
 
 // ── 드래그앤드롭 ─────────────────────────────────────────
@@ -948,8 +1005,7 @@ function onDrop(e){
 
   renderSummary();
   renderList();
-  // 타임라인 탭도 즉시 갱신
-  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+  refreshOpenTabs();
 }
 
 function onDragEnd(e){
@@ -979,7 +1035,7 @@ function onDropGroup(e, targetGroup){
 
   renderSummary();
   renderList();
-  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+  refreshOpenTabs();
 }
 
 // ── GitHub 자동 저장 ─────────────────────────────────────
@@ -993,7 +1049,8 @@ function buildDataPayload(){
   return {tasks: tasks.map(t=>({
     id:t.id, group:t.group, name:t.name, owner:t.owner,
     status:t.status, target:t.target, memo:t.memo,
-    openDate:t.openDate||'', phases:t.phases
+    openDate:t.openDate||'', phases:t.phases,
+    scheduleNote:t.scheduleNote||''
   }))};
 }
 
