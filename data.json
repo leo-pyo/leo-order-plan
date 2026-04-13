@@ -447,7 +447,7 @@
       "owner": "이가원",
       "status": "green",
       "target": "2026.04",
-      "memo": "4/15 오픈 목표",
+      "memo": "",
       "openDate": "4/15",
       "phases": {
         "plan": [
@@ -499,13 +499,13 @@
       "owner": "임유진",
       "status": "green",
       "target": "2026.04",
-      "memo": "4/29 오픈 목표",
+      "memo": "",
       "openDate": "4/29",
       "phases": {
         "plan": [
           [
             2025,
-            12
+            9
           ],
           [
             2025,
@@ -520,7 +520,7 @@
           ],
           [
             2026,
-            3
+            4
           ]
         ],
         "open": [
@@ -542,7 +542,7 @@
       "owner": "표재홍",
       "status": "green",
       "target": "2026.05",
-      "memo": "5/27 목표",
+      "memo": "",
       "openDate": "5/27",
       "phases": {
         "plan": [
