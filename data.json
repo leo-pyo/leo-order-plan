@@ -388,9 +388,9 @@
     {
       "id": 11,
       "group": "사업기획",
-      "name": "C1 체류카드 적용",
+      "name": "C1 제휴카드 적용",
       "owner": "표재홍",
-      "status": "yellow",
+      "status": "gray",
       "target": "2025.12",
       "memo": "",
       "openDate": "",
