@@ -152,6 +152,7 @@
   .owner-add-input{flex:1;font-size:11px;font-family:'Noto Sans KR',sans-serif;padding:4px 7px;border:1px solid var(--border2);border-radius:5px;outline:none;color:var(--text1)}
   .owner-add-input:focus{border-color:var(--accent)}
   .owner-add-btn{font-size:11px;font-family:'Noto Sans KR',sans-serif;font-weight:600;padding:4px 8px;border-radius:5px;border:none;cursor:pointer;background:var(--accent);color:#fff;white-space:nowrap}
+  .dropdown-layer{position:fixed;inset:0;z-index:2147483647;pointer-events:none}
   @media(max-width:900px){.sg{grid-template-columns:repeat(3,1fr)}.main{padding:16px}}
   @media(max-width:600px){.sg{grid-template-columns:repeat(2,1fr)}.header{padding:0 16px}}
 </style>
@@ -371,11 +372,21 @@ function setActiveDropdownRow(tid){
 }
 
 const dropdownOriginMap = new WeakMap();
+let dropdownLayer = null;
+
+function getDropdownLayer(){
+  if(dropdownLayer && dropdownLayer.isConnected) return dropdownLayer;
+  dropdownLayer = document.createElement('div');
+  dropdownLayer.className = 'dropdown-layer';
+  document.body.appendChild(dropdownLayer);
+  return dropdownLayer;
+}
 
 function mountDropdownPortal(dd){
-  if(!dd || dd.parentElement === document.body) return;
+  const layer = getDropdownLayer();
+  if(!dd || dd.parentElement === layer) return;
   dropdownOriginMap.set(dd, { parent: dd.parentElement, next: dd.nextSibling });
-  document.body.appendChild(dd);
+  layer.appendChild(dd);
 }
 
 function restoreDropdownPortal(dd){
@@ -399,6 +410,7 @@ function openDropdownFloating(dd, triggerEl){
   dd.classList.add('open');
   dd.style.position = 'fixed';
   dd.style.zIndex = '2147483647';
+  dd.style.pointerEvents = 'auto';
 
   const rect = triggerEl.getBoundingClientRect();
   const margin = 8;
@@ -425,6 +437,7 @@ function closeAllDropdowns(){
     d.style.left = '';
     d.style.top = '';
     d.style.zIndex = '';
+    d.style.pointerEvents = '';
     restoreDropdownPortal(d);
   });
   clearActiveDropdownRows();
