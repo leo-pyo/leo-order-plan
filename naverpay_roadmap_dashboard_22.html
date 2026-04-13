@@ -747,11 +747,7 @@ function renderTimeline(){
       body+=`<tr>
         <td class="tdn">${t.name}</td>
         <td class="tdo">
-          <span class="ot owner-edit" contenteditable="true" data-id="${t.id}"
-            style="outline:none;cursor:text;min-width:40px;display:inline-block"
-            onblur="saveOwner(this)"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
-          >${t.owner}</span>
+          <span class="ot" style="min-width:40px;display:inline-block">${t.owner||'미정'}</span>
         </td>
         ${cells}
       </tr>`;
@@ -979,20 +975,6 @@ function onDropGroup(e, targetGroup){
   renderSummary();
   renderList();
   if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
-}
-
-// ── 담당자 인라인 수정 ────────────────────────────────────
-function saveOwner(el){
-  const id=parseInt(el.dataset.id);
-  const newOwner=el.textContent.trim();
-  const t=tasks.find(x=>x.id===id);
-  if(!newOwner){el.textContent=t?.owner||'';return;}
-  if(t) t.owner=newOwner;
-  fillOwners();
-  // 목록 탭도 갱신 (담당자 필터 동기화)
-  if(document.getElementById('tab-list').style.display!=='none') renderList();
-  el.style.background='var(--green-bg)';el.style.color='var(--green)';
-  setTimeout(()=>{el.style.background='';el.style.color='';},700);
 }
 
 // ── GitHub 자동 저장 ─────────────────────────────────────
