@@ -152,7 +152,7 @@
       style="font-size:12px;font-family:'Noto Sans KR',sans-serif;font-weight:600;
              padding:6px 16px;border-radius:8px;border:none;cursor:pointer;
              background:var(--accent);color:#fff;transition:all .2s">
-      💾 data.json 저장
+      💾 저장
     </button>
   </div>
 </header>
@@ -494,7 +494,6 @@ function renderList(){
             </td>
             <td><input class="tn" style="font-size:12px;font-weight:400;color:var(--text2)"
                 value="${(t.memo||'').replace(/"/g,'&quot;')}"
-                placeholder="비고 입력..."
                 oninput="saveMemo(${t.id}, this.value)"
                 onclick="event.stopPropagation()"
                 ondragstart="event.stopPropagation()"
