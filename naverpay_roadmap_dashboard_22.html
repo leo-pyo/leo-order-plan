@@ -7,7 +7,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap');
   :root {
-    --bg:#f5f6f8;--surface:#fff;--surface2:#f0f2f5;--border:#e4e7ed;--border2:#d0d4dc;
+    --bg:#edf4f8;--surface:#fff;--surface2:#f0f2f5;--border:#dbe4ec;--border2:#c9d4de;
     --text1:#1a1d23;--text2:#5a6070;--text3:#9aa0ae;
     --green:#16a34a;--green-bg:#dcfce7;
     --yellow:#ca8a04;--yellow-bg:#fef9c3;
@@ -23,13 +23,17 @@
     --ph-open:#dc2626;    --ph-open-bg:#fca5a5;    /* 빨강 = 배포 */
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text1);font-size:14px;line-height:1.5;min-height:100vh}
-  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+  body{font-family:'Noto Sans KR',sans-serif;background:
+    radial-gradient(900px 380px at -6% -10%, #d9f5ef 0%, rgba(217,245,239,0) 58%),
+    radial-gradient(760px 340px at 110% -8%, #dbeafe 0%, rgba(219,234,254,0) 55%),
+    linear-gradient(180deg, #f8fcff 0%, var(--bg) 100%);
+    color:var(--text1);font-size:14px;line-height:1.5;min-height:100vh}
+  .header{background:linear-gradient(90deg,#0f766e 0%,#0a6d7f 45%,#0c5f88 100%);border-bottom:1px solid rgba(255,255,255,.14);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 6px 18px rgba(15,23,42,.16)}
   .logo{display:flex;align-items:center;gap:10px}
-  .logo-icon{width:28px;height:28px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center}
-  .logo-text{font-size:15px;font-weight:600}
-  .hdiv{width:1px;height:20px;background:var(--border);margin:0 12px}
-  .hmeta{font-size:12px;color:var(--text3)}
+  .logo-icon{width:28px;height:28px;background:rgba(255,255,255,.18);border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.24)}
+  .logo-text{font-size:15px;font-weight:600;color:#fff}
+  .hdiv{width:1px;height:20px;background:rgba(255,255,255,.26);margin:0 12px}
+  .hmeta{font-size:12px;color:rgba(255,255,255,.72)}
   .main{padding:24px 28px;max-width:1700px;margin:0 auto}
   .sg{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
   .sc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow)}
