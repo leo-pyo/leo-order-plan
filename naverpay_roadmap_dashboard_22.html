@@ -1013,6 +1013,18 @@ function loadLocalCache(){
   }
 }
 
+let lastLocalSnapshot = '';
+function persistLocalIfChanged(){
+  try{
+    const payload = buildDataPayload();
+    const snapshot = JSON.stringify(payload);
+    if(snapshot !== lastLocalSnapshot){
+      lastLocalSnapshot = snapshot;
+      saveLocalCache(payload);
+    }
+  }catch(_e){}
+}
+
 // 토큰은 sessionStorage에만 보관 (파일에 저장 안 됨)
 function getToken(){
   let token = sessionStorage.getItem('gh_token');
@@ -1043,6 +1055,9 @@ async function exportData(){
   setBtn('저장 중...', '#e0f2fe', '#0ea5e9', true);
 
   const data = buildDataPayload();
+  // 네트워크 결과와 무관하게 우선 로컬에 최신 상태를 보존
+  saveLocalCache(data);
+  lastLocalSnapshot = JSON.stringify(data);
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
 
   try {
@@ -1089,23 +1104,19 @@ async function exportData(){
 }
 
 // ── 초기화 ────────────────────────────────────────────────
-fetch('data.json')
+fetch(`data.json?ts=${Date.now()}`, { cache: 'no-store' })
   .then(r => { if(!r.ok) throw new Error('data.json 로드 실패'); return r.json(); })
   .then(data => {
     const remoteData = (data?.tasks && Array.isArray(data.tasks)) ? data : {tasks:[]};
     const localCache = loadLocalCache();
 
-    // 원격 데이터와 로컬 캐시를 비교해서 더 최신(항목 수가 많거나 마지막 저장 시각 존재)을 우선 사용
-    let selected = remoteData;
-    if(localCache?.data?.tasks && Array.isArray(localCache.data.tasks)){
-      const remoteLen = remoteData.tasks.length;
-      const localLen = localCache.data.tasks.length;
-      if(localLen > remoteLen || localCache.savedAt){
-        selected = localCache.data;
-      }
-    }
+    // 하드 새로고침 시 원복 방지를 위해 로컬 캐시를 우선 사용
+    const selected = (localCache?.data?.tasks && Array.isArray(localCache.data.tasks))
+      ? localCache.data
+      : remoteData;
 
     tasks = selected.tasks;
+    lastLocalSnapshot = JSON.stringify(buildDataPayload());
     renderSummary(); fillOwners(); renderList();
   })
   .catch(err => {
@@ -1113,12 +1124,17 @@ fetch('data.json')
     const localCache = loadLocalCache();
     if(localCache?.data?.tasks && Array.isArray(localCache.data.tasks)){
       tasks = localCache.data.tasks;
+      lastLocalSnapshot = JSON.stringify(buildDataPayload());
       renderSummary(); fillOwners(); renderList();
       return;
     }
     document.getElementById('list-content').innerHTML =
       '<div class="empty" style="color:var(--red)">⚠️ data.json을 불러올 수 없습니다.<br>VS Code에서 Live Server로 열어주세요.</div>';
   });
+
+// 주기적으로 변경사항을 로컬에 스냅샷 저장 (하드 새로고침 대비)
+setInterval(persistLocalIfChanged, 1000);
+window.addEventListener('beforeunload', persistLocalIfChanged);
 </script>
 </body>
 </html>
