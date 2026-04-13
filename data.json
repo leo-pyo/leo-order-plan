@@ -23,7 +23,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 2,
@@ -66,7 +68,9 @@
             11
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 3,
@@ -109,7 +113,9 @@
           ]
         ],
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 4,
@@ -161,7 +167,9 @@
             1
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 5,
@@ -213,7 +221,9 @@
             2
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 6,
@@ -265,7 +275,9 @@
             3
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 7,
@@ -290,7 +302,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 8,
@@ -315,7 +329,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 9,
@@ -340,7 +356,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 10,
@@ -365,7 +383,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 11,
@@ -390,7 +410,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 12,
@@ -406,7 +428,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 13,
@@ -422,7 +446,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 14,
@@ -438,7 +464,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 15,
@@ -490,7 +518,9 @@
             4
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 16,
@@ -533,7 +563,9 @@
             4
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 17,
@@ -541,7 +573,7 @@
       "name": "입점 가맹점 확대 연동 (진행 포함)",
       "owner": "표재홍",
       "status": "green",
-      "target": "2026.05",
+      "target": "2026.06",
       "memo": "",
       "openDate": "",
       "phases": {
@@ -576,7 +608,9 @@
             6
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 18,
@@ -619,7 +653,9 @@
           ]
         ],
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 19,
@@ -653,7 +689,9 @@
           ]
         ],
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 20,
@@ -696,7 +734,9 @@
             10
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 21,
@@ -748,7 +788,9 @@
             6
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 22,
@@ -800,7 +842,9 @@
             7
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 23,
@@ -834,7 +878,9 @@
           ]
         ],
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 24,
@@ -877,7 +923,9 @@
           ]
         ],
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 25,
@@ -920,7 +968,9 @@
             8
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 26,
@@ -963,7 +1013,9 @@
             9
           ]
         ]
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 27,
@@ -997,7 +1049,9 @@
           ]
         ],
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 28,
@@ -1031,7 +1085,9 @@
           ]
         ],
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 29,
@@ -1065,7 +1121,9 @@
           ]
         ],
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 30,
@@ -1081,7 +1139,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 31,
@@ -1097,7 +1157,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     },
     {
       "id": 32,
@@ -1122,7 +1184,9 @@
         "design": null,
         "dev": null,
         "open": null
-      }
+      },
+      "scheduleNote": "",
+      "scheduleNotes": {}
     }
   ]
 }
