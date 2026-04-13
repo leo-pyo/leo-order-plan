@@ -1147,11 +1147,9 @@ function onDropGroup(e, targetGroup){
   refreshOpenTabs();
 }
 
-// ── GitHub 자동 저장 ─────────────────────────────────────
-const GH_USER = 'leo-pyo';
-const GH_REPO = 'leo-order-plan';
-const GH_FILE = 'data.json';
-const GH_API  = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`;
+// ── 저장 API 설정 ─────────────────────────────────────────
+// 배포 후 실제 저장 API 주소로 변경하세요.
+const SAVE_API_URL = 'https://your-save-api.vercel.app/api/save';
 const LOCAL_CACHE_KEY = 'order_roadmap_data_cache_v1';
 
 function buildDataPayload(){
@@ -1197,20 +1195,6 @@ function persistLocalIfChanged(){
   }catch(_e){}
 }
 
-// 토큰은 sessionStorage에만 보관 (파일에 저장 안 됨)
-function getToken(){
-  let token = sessionStorage.getItem('gh_token');
-  if(!token){
-    token = prompt('GitHub Personal Access Token을 입력해주세요:\n(이 창은 브라우저를 닫으면 사라지고 파일에 저장되지 않아요)');
-    if(token) sessionStorage.setItem('gh_token', token.trim());
-  }
-  return token ? token.trim() : null;
-}
-
-function clearToken(){
-  sessionStorage.removeItem('gh_token');
-}
-
 async function exportData(){
   const btn = document.getElementById('save-btn');
   const setBtn = (text, bg, color, disabled) => {
@@ -1221,8 +1205,10 @@ async function exportData(){
     btn.disabled = !!disabled;
   };
 
-  const token = getToken();
-  if(!token){ alert('토큰이 없어 저장을 취소했어요.'); return; }
+  if(!SAVE_API_URL || SAVE_API_URL.includes('your-save-api')){
+    alert('저장 API 주소가 설정되지 않았습니다.\nSAVE_API_URL을 실제 배포 주소로 변경해주세요.');
+    return;
+  }
 
   setBtn('저장 중...', '#e0f2fe', '#0ea5e9', true);
 
@@ -1230,42 +1216,22 @@ async function exportData(){
   // 네트워크 결과와 무관하게 우선 로컬에 최신 상태를 보존
   saveLocalCache(data);
   lastLocalSnapshot = JSON.stringify(data);
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-
   try {
-    const getRes = await fetch(GH_API, {
-      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    const getJson = await getRes.json();
-    if(!getJson.sha) throw new Error('파일 SHA를 가져오지 못했어요. 토큰을 확인해주세요.');
-    const sha = getJson.sha;
-
-    const putRes = await fetch(GH_API, {
-      method: 'PUT',
+    const saveRes = await fetch(SAVE_API_URL, {
+      method: 'POST',
       headers: {
-        'Authorization': `token ${token}`,
-        'Accept': 'application/vnd.github.v3+json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        message: `data 업데이트 ${new Date().toLocaleString('ko-KR')}`,
-        content: content,
-        sha: sha
-      })
+      body: JSON.stringify(data)
     });
+    const result = await saveRes.json().catch(()=>({}));
 
-    if(putRes.ok){
+    if(saveRes.ok){
       saveLocalCache(data);
       setBtn('✓ 저장완료', 'var(--green-bg)', 'var(--green)', false);
       setTimeout(()=>setBtn('💾 저장', '', '', false), 2000);
     } else {
-      const err = await putRes.json();
-      // 토큰 오류면 세션에서 제거 후 재시도 유도
-      if(putRes.status===401||putRes.status===403){
-        clearToken();
-        throw new Error('토큰이 유효하지 않아요. 다시 시도하면 토큰을 다시 입력할 수 있어요.');
-      }
-      throw new Error(err.message || '업로드 실패');
+      throw new Error(result.error || result.message || '업로드 실패');
     }
   } catch(e){
     console.error('GitHub 저장 실패:', e);
