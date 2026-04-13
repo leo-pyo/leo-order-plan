@@ -147,7 +147,6 @@
     <span class="hmeta">네이버페이 주문형 외부가맹점 부스팅</span>
   </div>
   <div style="display:flex;align-items:center;gap:12px">
-    <span class="hmeta">마지막 업데이트: 2026.04.07 · 이창화</span>
     <button id="save-btn"
       onclick="exportData()"
       style="font-size:12px;font-family:'Noto Sans KR',sans-serif;font-weight:600;
@@ -493,7 +492,13 @@ function renderList(){
                 onclick="event.stopPropagation()"
                 onkeydown="if(event.key==='Enter') this.blur()">
             </td>
-            <td><div class="mc">${t.memo}</div></td>
+            <td><input class="tn" style="font-size:12px;font-weight:400;color:var(--text2)"
+                value="${(t.memo||'').replace(/"/g,'&quot;')}"
+                placeholder="비고 입력..."
+                oninput="saveMemo(${t.id}, this.value)"
+                onclick="event.stopPropagation()"
+                ondragstart="event.stopPropagation()"
+                onkeydown="if(event.key==='Enter') this.blur()"></td>
           </tr>`;
         }).join('')}
         </tbody>
@@ -595,6 +600,13 @@ function renderTimeline(){
 
   document.getElementById('tl-content').innerHTML=
     `<table class="tlt"><thead>${yrH}${moH}</thead><tbody>${body}</tbody></table>`;
+}
+
+// ── 비고 수정 ─────────────────────────────────────────────────
+function saveMemo(tid, val){
+  const t = tasks.find(x=>x.id===tid);
+  if(!t) return;
+  t.memo = val;
 }
 
 // ── 과제명 수정 ───────────────────────────────────────────────
