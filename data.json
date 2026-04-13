@@ -348,7 +348,7 @@
       "name": "가입/심사 프로세스 간소화",
       "owner": "표재홍",
       "status": "green",
-      "target": "2025.12",
+      "target": "DONE",
       "memo": "",
       "openDate": "",
       "phases": {
@@ -398,20 +398,11 @@
       "name": "프로모션 신청 & 결과 안내 페이센터 메뉴 추가",
       "owner": "미정",
       "status": "green",
-      "target": "2026.01",
+      "target": "미정",
       "memo": "",
       "openDate": "",
       "phases": {
-        "plan": [
-          [
-            2025,
-            12
-          ],
-          [
-            2026,
-            1
-          ]
-        ],
+        "plan": null,
         "design": null,
         "dev": null,
         "open": null
@@ -423,20 +414,11 @@
       "name": "참여형 프로모션 진행 (e.g. N차 구매 도장깨기)",
       "owner": "표재홍",
       "status": "green",
-      "target": "2026.03",
+      "target": "미정",
       "memo": "",
       "openDate": "",
       "phases": {
-        "plan": [
-          [
-            2026,
-            1
-          ],
-          [
-            2026,
-            3
-          ]
-        ],
+        "plan": null,
         "design": null,
         "dev": null,
         "open": null
@@ -448,20 +430,11 @@
       "name": "추천로직 서비스 구축",
       "owner": "윤상욱",
       "status": "green",
-      "target": "완료",
+      "target": "미정",
       "memo": "",
       "openDate": "",
       "phases": {
-        "plan": [
-          [
-            2025,
-            12
-          ],
-          [
-            2025,
-            12
-          ]
-        ],
+        "plan": null,
         "design": null,
         "dev": null,
         "open": null
