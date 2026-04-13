@@ -443,7 +443,7 @@
     {
       "id": 15,
       "group": "서비스기획",
-      "name": "C1 전시 지연 구축 phase 1 (진행중)",
+      "name": "C1 전시 지연 구축 phase 1",
       "owner": "이가원",
       "status": "green",
       "target": "2026.04",
@@ -495,7 +495,7 @@
     {
       "id": 16,
       "group": "서비스기획",
-      "name": "서비스 카테고리 개편 (상품DB 구축, 진행중)",
+      "name": "서비스 카테고리 개편 (상품DB 구축)",
       "owner": "임유진",
       "status": "green",
       "target": "2026.04",
