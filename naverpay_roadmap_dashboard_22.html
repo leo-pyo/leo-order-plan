@@ -179,6 +179,13 @@
   .mp-item:hover{background:#f8f9fb}
   .mp-iname{font-size:12px;font-weight:600;color:var(--text1)}
   .mp-inote{font-size:12px;color:var(--text2);line-height:1.5;word-break:break-word}
+  /* 일정 관리 텍스트어리어 */
+  .schedule-ta{width:100%;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:400;color:var(--text1);padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);outline:none;resize:vertical;min-height:58px;line-height:1.6;transition:border-color .15s}
+  .schedule-ta::placeholder{color:var(--text3)}
+  .schedule-ta:focus{border-color:var(--accent)}
+  .schedule-save-btn{font-size:11px;font-family:'Noto Sans KR',sans-serif;font-weight:600;padding:5px 14px;border-radius:6px;border:none;cursor:pointer;background:var(--accent);color:#fff;white-space:nowrap;transition:background .15s,color .15s}
+  .schedule-save-btn:hover{opacity:.85}
+  .schedule-save-btn.saved{background:var(--green-bg);color:var(--green)}
 </style>
 </head>
 <body>
@@ -855,22 +862,25 @@ function renderScheduleMgmt(){
     html += `<div class="sg-group">
       <div class="sg-title"><span>${GL[g]}</span><span class="sg-badge">${rows.length}개</span></div>
       <div class="tt-wrap">
-      <table class="tt" style="min-width:980px">
-        <colgroup><col style="width:360px"><col></colgroup>
+      <table class="tt" style="min-width:1020px">
+        <colgroup><col style="width:280px"><col><col style="width:80px"></colgroup>
         <thead>
           <tr>
             <th>과제명</th>
             <th>${month.label} 일정 관리 메모</th>
+            <th style="text-align:center"></th>
           </tr>
         </thead>
         <tbody>
           ${rows.map(t=>`<tr>
             <td style="padding:8px 12px;font-size:13px;font-weight:500;color:var(--text1)">${t.name}</td>
             <td style="padding:6px 10px">
-              <input class="tn" style="font-size:12px;font-weight:400;color:var(--text2)"
-                value="${getScheduleNote(t, month.key).replace(/"/g,'&quot;')}"
-                placeholder="일정 관련 텍스트 입력..."
-                oninput="saveScheduleNote(${t.id}, '${month.key}', this.value)">
+              <textarea class="schedule-ta"
+                id="sn-${t.id}-${month.key}"
+                placeholder="일정 관련 텍스트 입력... (Enter로 줄바꿈)">${escHtml(getScheduleNote(t, month.key))}</textarea>
+            </td>
+            <td style="padding:6px 10px;text-align:center;vertical-align:middle">
+              <button class="schedule-save-btn" onclick="saveScheduleNoteById(this,${t.id},'${month.key}')">저장</button>
             </td>
           </tr>`).join('')}
         </tbody>
@@ -963,6 +973,8 @@ function saveMemo(tid, val){
   t.memo = val;
 }
 
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
 function saveScheduleNote(tid, monthKey, val){
   const t = tasks.find(x=>x.id===tid);
   if(!t) return;
@@ -971,6 +983,15 @@ function saveScheduleNote(tid, monthKey, val){
   // 하위 호환 필드 유지
   t.scheduleNote = t.scheduleNotes[activeScheduleMonthKey] || '';
   renderMonthlyProgress();
+}
+
+function saveScheduleNoteById(btn, tid, monthKey){
+  const ta = document.getElementById(`sn-${tid}-${monthKey}`);
+  if(!ta) return;
+  saveScheduleNote(tid, monthKey, ta.value);
+  btn.textContent = '✓ 저장됨';
+  btn.classList.add('saved');
+  setTimeout(()=>{ btn.textContent = '저장'; btn.classList.remove('saved'); }, 1500);
 }
 
 // ── 과제명 수정 ───────────────────────────────────────────────
