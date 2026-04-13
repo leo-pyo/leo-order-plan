@@ -138,12 +138,12 @@
   .owner-btn:hover{opacity:.8}
   .owner-dd{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:1000;padding:6px;min-width:150px}
   .owner-dd.open{display:block}
-  .owner-list{max-height:200px;overflow-y:auto}
-  .owner-list-row{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:6px;font-size:12px;font-weight:500;color:var(--text1)}
-  .owner-list-row:hover{background:var(--surface2)}
-  .owner-list-row.selected{color:var(--blue);font-weight:600}
-  .owner-edit-btn{font-size:10px;padding:2px 6px;border:none;background:var(--border);color:var(--text2);border-radius:4px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;opacity:0;transition:opacity .15s}
-  .owner-list-row:hover .owner-edit-btn{opacity:1}
+  .owner-opt{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;border:none;background:none;width:100%;font-family:'Noto Sans KR',sans-serif;text-align:left;color:var(--text1);transition:background .15s}
+  .owner-opt:hover{background:var(--surface2)}
+  .owner-opt.selected{color:var(--blue);font-weight:600}
+  .owner-opt-text{flex:1}
+  .owner-opt-edit{font-size:12px;opacity:0;transition:opacity .15s;cursor:pointer;padding:2px 4px;border:none;background:none;color:var(--text2)}
+  .owner-opt:hover .owner-opt-edit{opacity:1}
   .owner-add-row{display:flex;gap:4px;padding:6px 6px 2px;border-top:1px solid var(--border);margin-top:4px}
   .owner-add-input{flex:1;font-size:11px;font-family:'Noto Sans KR',sans-serif;padding:4px 7px;border:1px solid var(--border2);border-radius:5px;outline:none;color:var(--text1)}
   .owner-add-input:focus{border-color:var(--accent)}
@@ -452,7 +452,8 @@ function renderList(){
               ondragover="onDragOver(event)"
               ondragleave="onDragLeave(event)"
               ondrop="onDrop(event)"
-              ondragend="onDragEnd(event)">
+              ondragend="onDragEnd(event)"
+              style="position:relative;z-index:${t.status==='gray'?20:1}">
             <td style="padding:6px 8px">
               <div style="display:flex;align-items:center;gap:6px">
                 <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
@@ -481,12 +482,15 @@ function renderList(){
                 ondragstart="event.stopPropagation()"
                 onkeydown="if(event.key==='Enter') this.blur()">
             </td>
-            <td style="padding:6px 8px">
+            <td style="padding:6px 8px;position:relative;z-index:10">
               <div class="owner-wrap">
                 <button class="owner-btn" onclick="openOwnerDd(event,${t.id})">${t.owner}</button>
                 <div class="owner-dd" id="odd-${t.id}">
                   <div style="max-height:160px;overflow-y:auto">
-                    ${getOwners().map(o=>`<button class="owner-opt${o===t.owner?' selected':''}" onclick="event.stopPropagation();setOwner(${t.id},'${o.replace(/'/g,"\\'")}')">${ o}</button>`).join('')}
+                    ${getOwners().map(o=>`<div class="owner-opt${o===t.owner?' selected':''}" onclick="event.stopPropagation();setOwner(${t.id},'${o.replace(/'/g,"\\'")}')" style="cursor:pointer">
+                      <span class="owner-opt-text">${o}</span>
+                      <button class="owner-opt-edit" onclick="event.stopPropagation();editOwnerName('${o.replace(/'/g,"\\'")}')" title="담당자 이름 수정">✏️</button>
+                    </div>`).join('')}
                   </div>
                   <div class="owner-add-row">
                     <input class="owner-add-input" id="owner-new-input-${t.id}" type="text" placeholder="새 담당자"
