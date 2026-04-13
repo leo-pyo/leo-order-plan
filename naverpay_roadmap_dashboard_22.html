@@ -697,9 +697,13 @@ function renderTimeline(){
     rows.forEach(t=>{
       const ph=t.phases||{};
 
-      // 각 월 인덱스별로 row0/row1에 어떤 단계가 들어오는지 매핑
-      const map0=new Array(MONTHS.length).fill(null); // 윗줄: plan, design
-      const map1=new Array(MONTHS.length).fill(null); // 아랫줄: dev, open
+      // 각 단계별 월 인덱스 매핑 (기획/디자인/개발/배포를 독립 바(4줄)로 표시)
+      const phaseMaps = {
+        plan: new Array(MONTHS.length).fill(null),
+        design: new Array(MONTHS.length).fill(null),
+        dev: new Array(MONTHS.length).fill(null),
+        open: new Array(MONTHS.length).fill(null)
+      };
 
       PCFG.forEach(cfg=>{
         const p=ph[cfg.key];
@@ -707,19 +711,18 @@ function renderTimeline(){
         const si=moIdx(p[0][0],p[0][1]),ei=moIdx(p[1][0],p[1][1]);
         if(si<0||ei<0)return;
         for(let i=si;i<=Math.min(ei,MONTHS.length-1);i++){
-          if(cfg.row===0) map0[i]=cfg;
-          else map1[i]=cfg;
+          phaseMaps[cfg.key][i]=cfg;
         }
       });
 
       // 각 월 셀 HTML 생성
       const cells=MONTHS.map((mo,i)=>{
-        const c0=map0[i], c1=map1[i];
+        const cPlan=phaseMaps.plan[i], cDesign=phaseMaps.design[i], cDev=phaseMaps.dev[i], cOpen=phaseMaps.open[i];
         const isToday=(i===todayIdx);
 
         // 바 세그먼트: 연속 여부에 따라 border-radius 결정
         function seg(cfg, map, i){
-          if(!cfg) return `<div class="bar-seg" style="height:13px"></div>`;
+          if(!cfg) return `<div class="bar-seg" style="height:9px"></div>`;
           const prev=i>0?map[i-1]:null;
           const next=i<MONTHS.length-1?map[i+1]:null;
           const isStart=!prev||prev.key!==cfg.key;
@@ -728,7 +731,7 @@ function renderTimeline(){
           const br=isEnd?'4px':'0';
           const displayLabel=(cfg.key==='open'&&t.openDate)?t.openDate:cfg.label;
           const label=isStart?`<span style="color:${cfg.color};font-size:9px;font-weight:600;white-space:nowrap">${displayLabel}</span>`:'';
-          return `<div class="bar-seg" style="height:13px;background:${cfg.bg};border-radius:${bl} ${br} ${br} ${bl}">${label}</div>`;
+          return `<div class="bar-seg" style="height:9px;background:${cfg.bg};border-radius:${bl} ${br} ${br} ${bl}">${label}</div>`;
         }
 
         const todayLineHtml=isToday
@@ -738,8 +741,10 @@ function renderTimeline(){
         return `<td class="mo-cell${isToday?' today-cell':''}" style="position:relative">
           ${todayLineHtml}
           <div class="bar-row">
-            ${seg(c0,map0,i)}
-            ${seg(c1,map1,i)}
+            ${seg(cPlan,phaseMaps.plan,i)}
+            ${seg(cDesign,phaseMaps.design,i)}
+            ${seg(cDev,phaseMaps.dev,i)}
+            ${seg(cOpen,phaseMaps.open,i)}
           </div>
         </td>`;
       }).join('');
