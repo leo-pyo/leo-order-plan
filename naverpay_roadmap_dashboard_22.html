@@ -36,7 +36,7 @@
   .sc-label{font-size:11px;color:var(--text3);font-weight:500;display:flex;align-items:center;gap:5px;margin-bottom:6px}
   .sc-val{font-size:26px;font-weight:600;color:var(--text1)}
   .sc.green .sc-val{color:var(--green)}.sc.yellow .sc-val{color:var(--yellow)}.sc.red .sc-val{color:var(--red)}.sc.gray .sc-val{color:var(--gray)}
-  .tw{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+  .tw{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:visible}
   .th{display:flex;align-items:center;border-bottom:1px solid var(--border);padding:0 20px}
   .tb{font-size:13px;font-weight:500;color:var(--text3);padding:14px 18px;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:'Noto Sans KR',sans-serif;transition:color .15s,border-color .15s}
   .tb:hover{color:var(--text2)}.tb.active{color:var(--text1);border-bottom-color:var(--accent)}
@@ -54,7 +54,10 @@
   .sg-group{border-bottom:1px solid var(--border)}.sg-group:last-child{border-bottom:none}
   .sg-title{font-size:12px;font-weight:600;color:var(--text2);padding:9px 20px;background:var(--surface2);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
   .sg-badge{font-size:10px;background:var(--surface);border:1px solid var(--border2);color:var(--text3);padding:2px 8px;border-radius:20px}
-  .tt{width:100%;border-collapse:collapse}
+  .tt{width:100%;border-collapse:separate;border-spacing:0}
+  .tt tr{position:relative;z-index:1}
+  .tt tr.dropdown-active{z-index:3000}
+  .tt tr.dropdown-active td{position:relative;z-index:3000}
   .tt th{font-size:11px;font-weight:500;color:var(--text3);padding:7px 16px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap}
   .tt td{padding:9px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
   .tt tr:last-child td{border-bottom:none}
@@ -78,7 +81,7 @@
   .sbb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block}
   /* 상태 드롭다운 */
   .status-wrap{position:relative;display:inline-block}
-  .status-dd{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:50;padding:6px;min-width:110px}
+  .status-dd{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:99999;padding:6px;min-width:110px}
   .status-dd.open{display:block}
   .status-opt{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;border:none;background:none;width:100%;font-family:'Noto Sans KR',sans-serif;text-align:left}
   .status-opt:hover{background:var(--surface2)}
@@ -118,7 +121,7 @@
   .phase-col{min-width:90px;vertical-align:top;padding:8px 10px !important}
   .phase-col-header{font-size:11px;font-weight:500;color:var(--text3);white-space:nowrap}
   .phase-edit-wrap{position:relative;display:inline-block}
-  .phase-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:50;padding:10px;min-width:160px}
+  .phase-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:99999;padding:10px;min-width:160px}
   .phase-dropdown.open{display:block}
   .phase-dropdown input[type=text]{width:100%;margin-bottom:6px;font-size:12px;padding:5px 8px}
   .pd-row{display:flex;gap:4px;flex-wrap:wrap}
@@ -136,7 +139,7 @@
   .owner-wrap{position:relative;display:inline-block}
   .owner-btn{display:inline-flex;align-items:center;font-size:11px;padding:3px 9px;border-radius:20px;background:var(--blue-bg);color:var(--blue);font-weight:500;white-space:nowrap;cursor:pointer;border:none;font-family:'Noto Sans KR',sans-serif;transition:opacity .15s}
   .owner-btn:hover{opacity:.8}
-  .owner-dd{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:1000;padding:6px;min-width:150px}
+  .owner-dd{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:99999;padding:6px;min-width:150px}
   .owner-dd.open{display:block}
   .owner-opt{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;border:none;background:none;width:100%;font-family:'Noto Sans KR',sans-serif;text-align:left;color:var(--text1);transition:background .15s}
   .owner-opt:hover{background:var(--surface2)}
@@ -323,8 +326,8 @@ function phaseLabelHtml(tid, key, p, isDone){
 // 단계 편집 드롭다운 열기
 function openPhaseEdit(e, tid, key){
   e.stopPropagation();
-  // 기존 열린 드롭다운 모두 닫기
-  document.querySelectorAll('.phase-dropdown.open').forEach(d=>d.classList.remove('open'));
+  closeAllDropdowns();
+  setActiveDropdownRow(tid);
   const btn = e.currentTarget;
   let dd = btn.parentElement.querySelector('.phase-dropdown');
   if(!dd){
@@ -356,7 +359,20 @@ function openPhaseEdit(e, tid, key){
   dd.classList.add('open');
 }
 
-function closeAllDropdowns(){document.querySelectorAll('.phase-dropdown.open, .status-dd.open, .owner-dd.open').forEach(d=>d.classList.remove('open'));}
+function clearActiveDropdownRows(){
+  document.querySelectorAll('.tt tr.dropdown-active').forEach(r=>r.classList.remove('dropdown-active'));
+}
+
+function setActiveDropdownRow(tid){
+  clearActiveDropdownRows();
+  const row = document.querySelector(`.tt tr[data-id="${tid}"]`);
+  if(row) row.classList.add('dropdown-active');
+}
+
+function closeAllDropdowns(){
+  document.querySelectorAll('.phase-dropdown.open, .status-dd.open, .owner-dd.open').forEach(d=>d.classList.remove('open'));
+  clearActiveDropdownRows();
+}
 // 드롭다운 내부 클릭 시에는 닫히지 않도록 - 외부 클릭 시에만 닫기
 document.addEventListener('click', function(e){
   if(!e.target.closest('.phase-edit-wrap') && !e.target.closest('.target-edit-wrap')){
@@ -651,7 +667,8 @@ function renderTimeline(){
 // ── 담당자 드롭다운 ─────────────────────────────────────────
 function openOwnerDd(e, tid){
   e.stopPropagation();
-  document.querySelectorAll('.owner-dd.open, .status-dd.open, .phase-dropdown.open').forEach(d=>d.classList.remove('open'));
+  closeAllDropdowns();
+  setActiveDropdownRow(tid);
   const dd = document.getElementById('odd-'+tid);
   if(dd) dd.classList.add('open');
 }
@@ -717,8 +734,8 @@ function saveName(tid, val){
 // ── 상태 드롭다운 ────────────────────────────────────────────
 function openStatusDd(e, tid){
   e.stopPropagation();
-  // 다른 드롭다운 모두 닫기
   closeAllDropdowns();
+  setActiveDropdownRow(tid);
   const dd = document.getElementById('sdd-'+tid);
   if(dd) dd.classList.add('open');
 }
@@ -744,7 +761,8 @@ function saveOpenDate(tid, val){
 // ── 목표일정 수정 ──────────────────────────────────────────
 function openTargetEdit(e, tid){
   e.stopPropagation();
-  document.querySelectorAll('.phase-dropdown.open').forEach(d=>d.classList.remove('open'));
+  closeAllDropdowns();
+  setActiveDropdownRow(tid);
   const dd=document.getElementById('tgt-dd-'+tid);
   if(dd){
     dd.classList.add('open');
