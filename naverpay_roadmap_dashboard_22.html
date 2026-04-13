@@ -54,11 +54,12 @@
   .sg-group{border-bottom:1px solid var(--border)}.sg-group:last-child{border-bottom:none}
   .sg-title{font-size:12px;font-weight:600;color:var(--text2);padding:9px 20px;background:var(--surface2);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
   .sg-badge{font-size:10px;background:var(--surface);border:1px solid var(--border2);color:var(--text3);padding:2px 8px;border-radius:20px}
-  .tt{width:100%;border-collapse:separate;border-spacing:0}
+  .tt-wrap{width:100%;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch}
+  .tt{width:100%;min-width:1320px;border-collapse:separate;border-spacing:0;table-layout:auto}
   .tt tr{position:relative;z-index:1}
   .tt tr.dropdown-active{z-index:3000}
   .tt tr.dropdown-active td{position:relative;z-index:3000}
-  .tt th{font-size:11px;font-weight:500;color:var(--text3);padding:7px 16px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap}
+  .tt th{font-size:11px;font-weight:500;color:var(--text3);padding:7px 16px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface);white-space:normal;word-break:keep-all}
   .tt td{padding:9px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
   .tt tr:last-child td{border-bottom:none}
   .tt tbody tr:hover{background:#f8f9fb}
@@ -519,7 +520,8 @@ function renderList(){
         ondrop="onDropGroup(event,'${g}')">
         <span>${GL[g]}</span><span class="sg-badge">${rows.length}개</span>
       </div>
-      <table class="tt" style="table-layout:fixed">
+      <div class="tt-wrap">
+      <table class="tt">
         <colgroup>
           <col style="width:100px"><col style="width:320px"><col style="width:90px">
           <col style="width:90px"><col style="width:100px"><col style="width:100px"><col style="width:100px"><col style="width:100px"><col style="width:110px"><col style="width:120px">
@@ -657,6 +659,7 @@ function renderList(){
         }).join('')}
         </tbody>
       </table>
+      </div>
     </div>`;
   });
   if(!html)html='<div class="empty">조건에 맞는 과제가 없습니다.</div>';
