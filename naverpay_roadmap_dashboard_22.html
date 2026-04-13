@@ -323,7 +323,8 @@ function switchTab(tab,el){
 
 function refreshOpenTabs(){
   if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
-  if(document.getElementById('tab-schedule').style.display!=='none') renderScheduleMgmt();
+  // 일정관리는 목록 변경(과제명/순서) 시 항상 최신으로 동기화
+  renderScheduleMgmt();
 }
 
 // ── 단계 라벨 헬퍼 ───────────────────────────────────────
@@ -783,7 +784,7 @@ function renderTimeline(){
 
 // ── 일정 관리 렌더 ─────────────────────────────────────────
 function renderScheduleMgmt(){
-  const groups=['사업기획','서비스기획','하반기'];
+  const groups=GROUPS.filter(g=>g!=='완료');
   const month = SCHEDULE_MONTHS.find(x=>x.key===activeScheduleMonthKey) || SCHEDULE_MONTHS[0];
   let html=`<div class="st-wrap">${SCHEDULE_MONTHS.map(m=>
     `<button class="st-btn${m.key===month.key?' active':''}" onclick="switchScheduleMonth('${m.key}')">${m.label}</button>`
