@@ -162,6 +162,23 @@
   .dropdown-layer{position:fixed;inset:0;z-index:2147483647;pointer-events:none}
   @media(max-width:900px){.sg{grid-template-columns:repeat(3,1fr)}.main{padding:16px}}
   @media(max-width:600px){.sg{grid-template-columns:repeat(2,1fr)}.header{padding:0 16px}}
+  /* 월별 진행상황 패널 */
+  .mp-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+  .mp-head{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--surface2);border-bottom:1px solid var(--border)}
+  .mp-head-left{display:flex;align-items:center;gap:10px}
+  .mp-htitle{font-size:14px;font-weight:600;color:var(--text1)}
+  .mp-mchip{font-size:11px;font-weight:700;background:var(--accent);color:#fff;padding:2px 10px;border-radius:20px}
+  .mp-hcount{font-size:11px;color:var(--text3)}
+  .mp-empty{padding:20px;text-align:center;font-size:13px;color:var(--text3)}
+  .mp-list{display:flex;flex-direction:column}
+  .mp-group{border-bottom:1px solid var(--border)}
+  .mp-group:last-child{border-bottom:none}
+  .mp-ghead{font-size:11px;font-weight:600;color:var(--text2);padding:7px 20px;background:var(--surface2);border-bottom:1px solid var(--border)}
+  .mp-item{display:grid;grid-template-columns:260px 1fr;gap:16px;padding:8px 20px;border-bottom:1px solid var(--border);align-items:start}
+  .mp-item:last-child{border-bottom:none}
+  .mp-item:hover{background:#f8f9fb}
+  .mp-iname{font-size:12px;font-weight:600;color:var(--text1)}
+  .mp-inote{font-size:12px;color:var(--text2);line-height:1.5;word-break:break-word}
 </style>
 </head>
 <body>
@@ -187,6 +204,7 @@
 
 <main class="main">
   <div class="sg" id="sg"></div>
+  <div id="monthly-progress-panel" class="mp-panel" style="margin-bottom:20px"></div>
   <div class="tw">
     <div class="th">
       <button class="tb active" onclick="switchTab('list',this)">과제 목록</button>
@@ -325,6 +343,7 @@ function refreshOpenTabs(){
   if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
   // 일정관리는 목록 변경(과제명/순서) 시 항상 최신으로 동기화
   renderScheduleMgmt();
+  renderMonthlyProgress();
 }
 
 // ── 단계 라벨 헬퍼 ───────────────────────────────────────
@@ -782,6 +801,46 @@ function renderTimeline(){
     `<table class="tlt"><thead>${yrH}${moH}</thead><tbody>${body}</tbody></table>`;
 }
 
+// ── 월별 진행상황 패널 렌더 ──────────────────────────────
+function renderMonthlyProgress(){
+  const now=new Date();
+  const y=now.getFullYear(), m=now.getMonth()+1;
+  const monthKey=`${y}-${String(m).padStart(2,'0')}`;
+  const panel=document.getElementById('monthly-progress-panel');
+  if(!panel) return;
+
+  const groupSections=GROUPS.filter(g=>g!=='완료').map(g=>{
+    const items=tasks.filter(t=>t.group===g).filter(t=>{
+      const note=getScheduleNote(t,monthKey);
+      return note&&note.trim();
+    });
+    return {g,items};
+  }).filter(s=>s.items.length>0);
+
+  const totalCount=groupSections.reduce((a,s)=>a+s.items.length,0);
+  let bodyHtml='';
+  if(totalCount===0){
+    bodyHtml=`<div class="mp-empty">이번 달(${m}월) 등록된 진행상황이 없습니다.</div>`;
+  }else{
+    bodyHtml=`<div class="mp-list">${groupSections.map(section=>`
+      <div class="mp-group">
+        <div class="mp-ghead">${GL[section.g]}</div>
+        ${section.items.map(t=>{
+          const note=getScheduleNote(t,monthKey).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+          return `<div class="mp-item"><div class="mp-iname">${t.name}</div><div class="mp-inote">${note}</div></div>`;
+        }).join('')}
+      </div>`).join('')}</div>`;
+  }
+
+  panel.innerHTML=`<div class="mp-head">
+    <div class="mp-head-left">
+      <span class="mp-htitle">월별 진행상황</span>
+      <span class="mp-mchip">${m}월</span>
+    </div>
+    <span class="mp-hcount">${totalCount>0?`총 ${totalCount}건`:''}</span>
+  </div>${bodyHtml}`;
+}
+
 // ── 일정 관리 렌더 ─────────────────────────────────────────
 function renderScheduleMgmt(){
   const groups=GROUPS.filter(g=>g!=='완료');
@@ -911,6 +970,7 @@ function saveScheduleNote(tid, monthKey, val){
   t.scheduleNotes[monthKey] = val;
   // 하위 호환 필드 유지
   t.scheduleNote = t.scheduleNotes[activeScheduleMonthKey] || '';
+  renderMonthlyProgress();
 }
 
 // ── 과제명 수정 ───────────────────────────────────────────────
@@ -1204,7 +1264,7 @@ fetch(`data.json?ts=${Date.now()}`, { cache: 'no-store' })
 
     tasks = selected.tasks;
     lastLocalSnapshot = JSON.stringify(buildDataPayload());
-    renderSummary(); fillOwners(); renderList();
+    renderSummary(); fillOwners(); renderList(); renderMonthlyProgress();
   })
   .catch(err => {
     console.error(err);
@@ -1212,7 +1272,7 @@ fetch(`data.json?ts=${Date.now()}`, { cache: 'no-store' })
     if(localCache?.data?.tasks && Array.isArray(localCache.data.tasks)){
       tasks = localCache.data.tasks;
       lastLocalSnapshot = JSON.stringify(buildDataPayload());
-      renderSummary(); fillOwners(); renderList();
+      renderSummary(); fillOwners(); renderList(); renderMonthlyProgress();
       return;
     }
     document.getElementById('list-content').innerHTML =
