@@ -4,7 +4,7 @@
       "id": 1,
       "group": "완료",
       "name": "중대형 가맹점 연동",
-      "owner": "윤상욱",
+      "owner": "표재홍",
       "status": "green",
       "target": "상시",
       "memo": "구축한 제안서/서비스소개서 기반 상시 진행",
@@ -23,9 +23,7 @@
         "design": null,
         "dev": null,
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 2,
@@ -68,15 +66,13 @@
             11
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 3,
       "group": "완료",
       "name": "주문관리 API REST 전환",
-      "owner": "이가원",
+      "owner": "표재홍",
       "status": "green",
       "target": "완료",
       "memo": "",
@@ -113,9 +109,7 @@
           ]
         ],
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 4,
@@ -167,15 +161,13 @@
             1
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 5,
       "group": "완료",
       "name": "구매하기 버튼 개선",
-      "owner": "이가원",
+      "owner": "표재홍",
       "status": "green",
       "target": "2/4",
       "memo": "",
@@ -221,15 +213,13 @@
             2
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 6,
       "group": "완료",
       "name": "API 인증키 발급 기능",
-      "owner": "이가원",
+      "owner": "표재홍",
       "status": "green",
       "target": "3/4",
       "memo": "",
@@ -275,9 +265,7 @@
             3
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 7,
@@ -302,9 +290,7 @@
         "design": null,
         "dev": null,
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 8,
@@ -322,16 +308,14 @@
             12
           ],
           [
-            2026,
-            3
+            2025,
+            12
           ]
         ],
         "design": null,
         "dev": null,
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 9,
@@ -340,7 +324,7 @@
       "owner": "이창화",
       "status": "green",
       "target": "2026.02",
-      "memo": "설연휴 진행 - 데이터 확인 후 개선점 도출 예정",
+      "memo": "사연운 진행 - 데이터 확인 후 개선 도출 예정",
       "openDate": "2/4",
       "phases": {
         "plan": [
@@ -354,11 +338,27 @@
           ]
         ],
         "design": null,
-        "dev": null,
-        "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+        "dev": [
+          [
+            2026,
+            2
+          ],
+          [
+            2026,
+            2
+          ]
+        ],
+        "open": [
+          [
+            2026,
+            2
+          ],
+          [
+            2026,
+            2
+          ]
+        ]
+      }
     },
     {
       "id": 10,
@@ -366,33 +366,6 @@
       "name": "가입/심사 프로세스 간소화",
       "owner": "표재홍",
       "status": "green",
-      "target": "DONE",
-      "memo": "",
-      "openDate": "",
-      "phases": {
-        "plan": [
-          [
-            2025,
-            12
-          ],
-          [
-            2025,
-            12
-          ]
-        ],
-        "design": null,
-        "dev": null,
-        "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
-    },
-    {
-      "id": 11,
-      "group": "사업기획",
-      "name": "C1 제휴카드 적용",
-      "owner": "표재홍",
-      "status": "gray",
       "target": "2025.12",
       "memo": "",
       "openDate": "",
@@ -410,27 +383,57 @@
         "design": null,
         "dev": null,
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
+    },
+    {
+      "id": 11,
+      "group": "사업기획",
+      "name": "C1 체류카드 적용",
+      "owner": "표재홍",
+      "status": "yellow",
+      "target": "2025.12",
+      "memo": "",
+      "openDate": "",
+      "phases": {
+        "plan": [
+          [
+            2025,
+            12
+          ],
+          [
+            2025,
+            12
+          ]
+        ],
+        "design": null,
+        "dev": null,
+        "open": null
+      }
     },
     {
       "id": 12,
       "group": "사업기획",
       "name": "프로모션 신청 & 결과 안내 페이센터 메뉴 추가",
-      "owner": "미정",
+      "owner": "표재홍",
       "status": "green",
-      "target": "미정",
+      "target": "2026.01",
       "memo": "",
       "openDate": "",
       "phases": {
-        "plan": null,
+        "plan": [
+          [
+            2025,
+            12
+          ],
+          [
+            2026,
+            1
+          ]
+        ],
         "design": null,
         "dev": null,
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 13,
@@ -438,54 +441,68 @@
       "name": "참여형 프로모션 진행 (e.g. N차 구매 도장깨기)",
       "owner": "표재홍",
       "status": "green",
-      "target": "미정",
+      "target": "2026.03",
       "memo": "",
       "openDate": "",
       "phases": {
-        "plan": null,
+        "plan": [
+          [
+            2026,
+            1
+          ],
+          [
+            2026,
+            3
+          ]
+        ],
         "design": null,
         "dev": null,
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 14,
       "group": "사업기획",
       "name": "추천로직 서비스 구축",
-      "owner": "윤상욱",
+      "owner": "표재홍",
       "status": "green",
-      "target": "미정",
+      "target": "완료",
       "memo": "",
       "openDate": "",
       "phases": {
-        "plan": null,
+        "plan": [
+          [
+            2025,
+            12
+          ],
+          [
+            2025,
+            12
+          ]
+        ],
         "design": null,
         "dev": null,
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 15,
       "group": "서비스기획",
-      "name": "C1 전시 지면 구축 phase 1",
-      "owner": "이가원",
-      "status": "green",
+      "name": "C1 전시 지연 구축 phase 1 (진행중)",
+      "owner": "표재홍",
+      "status": "yellow",
       "target": "2026.04",
-      "memo": "",
+      "memo": "4/15 오픈 목표",
       "openDate": "4/15",
       "phases": {
         "plan": [
           [
             2025,
-            9
+            10
           ],
           [
-            2026,
-            1
+            2025,
+            11
           ]
         ],
         "design": [
@@ -518,24 +535,22 @@
             4
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 16,
       "group": "서비스기획",
-      "name": "서비스 카테고리 개편 (상품DB 구축)",
-      "owner": "임유진",
+      "name": "서비스 카테고리 개편 (상품DB 구축, 진행중)",
+      "owner": "표재홍",
       "status": "green",
       "target": "2026.04",
-      "memo": "",
+      "memo": "4/29 오픈 목표",
       "openDate": "4/29",
       "phases": {
         "plan": [
           [
             2025,
-            9
+            12
           ],
           [
             2025,
@@ -550,7 +565,7 @@
           ],
           [
             2026,
-            4
+            3
           ]
         ],
         "open": [
@@ -563,9 +578,7 @@
             4
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 17,
@@ -573,21 +586,30 @@
       "name": "입점 가맹점 확대 연동 (진행 포함)",
       "owner": "표재홍",
       "status": "green",
-      "target": "2026.06",
-      "memo": "",
-      "openDate": "",
+      "target": "2026.05",
+      "memo": "5/27 목표",
+      "openDate": "5/27",
       "phases": {
         "plan": [
           [
             2026,
-            1
+            3
           ],
           [
             2026,
             3
           ]
         ],
-        "design": null,
+        "design": [
+          [
+            2026,
+            3
+          ],
+          [
+            2026,
+            3
+          ]
+        ],
         "dev": [
           [
             2026,
@@ -595,39 +617,35 @@
           ],
           [
             2026,
-            6
+            4
           ]
         ],
         "open": [
           [
             2026,
-            6
+            5
           ],
           [
             2026,
-            6
+            5
           ]
         ]
-      },
-      "scheduleNote": "- 유관부서 별 검토 진행 (CX&RM / 법무 / 컴플라이언스 / 사업자 금융 / FDS / AML 등)\n- 각 부서 별 영향도 파악 후 서비스 / 정책 별 검토 사항 정리 및 진행 예정\n- 화이트박스 연동 규격 제공 예정",
-      "scheduleNotes": {
-        "2026-04": "- 유관부서 별 검토 진행 (CX&RM / 법무 / 컴플라이언스 / 사업자 금융 / FDS / AML 등)\n- 각 부서 별 영향도 파악 후 서비스 / 정책 별 검토 사항 정리 및 진행 예정\n- 화이트박스 연동 규격 제공 예정"
       }
     },
     {
       "id": 18,
       "group": "서비스기획",
-      "name": "개발자센터 구축 phase 1",
+      "name": "개발자센터 구축 phase 1 (진행중)",
       "owner": "김성은",
-      "status": "red",
-      "target": "2026.06",
+      "status": "yellow",
+      "target": "2026.04",
       "memo": "",
-      "openDate": "6/10",
+      "openDate": "",
       "phases": {
         "plan": [
           [
-            2025,
-            10
+            2026,
+            1
           ],
           [
             2026,
@@ -641,7 +659,7 @@
           ],
           [
             2026,
-            4
+            2
           ]
         ],
         "dev": [
@@ -651,43 +669,23 @@
           ],
           [
             2026,
-            5
+            3
           ]
         ],
-        "open": [
-          [
-            2026,
-            6
-          ],
-          [
-            2026,
-            6
-          ]
-        ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+        "open": null
+      }
     },
     {
       "id": 19,
       "group": "서비스기획",
       "name": "주문등록 API REST 전환 (진행 포함)",
       "owner": "이상현",
-      "status": "yellow",
-      "target": "미정",
+      "status": "green",
+      "target": "완료",
       "memo": "",
       "openDate": "",
       "phases": {
-        "plan": [
-          [
-            2025,
-            9
-          ],
-          [
-            2026,
-            4
-          ]
-        ],
+        "plan": null,
         "design": null,
         "dev": [
           [
@@ -696,28 +694,26 @@
           ],
           [
             2026,
-            4
+            2
           ]
         ],
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 20,
       "group": "서비스기획",
-      "name": "배송 시뮬레이터 연동 phase1,2",
-      "owner": "이창화",
+      "name": "(지연) 배송 시뮬레이터 연동 phase1,2",
+      "owner": "표재홍",
       "status": "red",
-      "target": "2026.10",
+      "target": "(지연) 26.10",
       "memo": "",
       "openDate": "",
       "phases": {
         "plan": [
           [
             2026,
-            2
+            3
           ],
           [
             2026,
@@ -732,7 +728,7 @@
           ],
           [
             2026,
-            10
+            9
           ]
         ],
         "open": [
@@ -745,15 +741,13 @@
             10
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 21,
       "group": "서비스기획",
-      "name": "C1 전시 지면 구축 phase 2",
-      "owner": "윤상욱",
+      "name": "C1 전시 지연 구축 phase 2",
+      "owner": "표재홍",
       "status": "yellow",
       "target": "2026.06",
       "memo": "",
@@ -799,15 +793,13 @@
             6
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 22,
       "group": "서비스기획",
       "name": "사용자향 마케팅 서비스 구축 - 적립",
-      "owner": "이영민",
+      "owner": "표재홍",
       "status": "yellow",
       "target": "2026.07",
       "memo": "1차 리뷰 완료 & 피드백 보충",
@@ -853,15 +845,13 @@
             7
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 23,
       "group": "하반기",
       "name": "개발자센터 구축 phase 2",
-      "owner": "김성은",
+      "owner": "표재홍",
       "status": "green",
       "target": "2026.06",
       "memo": "주문등록 오픈 시점과 같이 갈 수 있을지 확인",
@@ -889,15 +879,13 @@
           ]
         ],
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 24,
       "group": "하반기",
       "name": "페이센터 알람발송 기능 구현 phase 1",
-      "owner": "이영민",
+      "owner": "표재홍",
       "status": "green",
       "target": "2026.06",
       "memo": "도구서비스 개발지원 일정(26년 2Q) 영향",
@@ -934,15 +922,13 @@
           ]
         ],
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 25,
       "group": "하반기",
       "name": "사용자향 마케팅 서비스 구축 - 광고",
-      "owner": "이영민",
+      "owner": "윤상목",
       "status": "green",
       "target": "2026.08",
       "memo": "",
@@ -979,15 +965,13 @@
             8
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 26,
       "group": "하반기",
       "name": "페이센터 알람발송 기능 구현 phase 2",
-      "owner": "이영민",
+      "owner": "표재홍",
       "status": "green",
       "target": "2026.09",
       "memo": "",
@@ -1024,15 +1008,13 @@
             9
           ]
         ]
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 27,
       "group": "하반기",
       "name": "C1 전시 지연 구축 phase 3",
-      "owner": "윤상욱",
+      "owner": "표재홍",
       "status": "green",
       "target": "2026 연내",
       "memo": "",
@@ -1060,15 +1042,13 @@
           ]
         ],
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 28,
       "group": "하반기",
       "name": "개발자센터 구축 phase 3",
-      "owner": "김성은",
+      "owner": "표재홍",
       "status": "green",
       "target": "2026 연내",
       "memo": "",
@@ -1096,15 +1076,13 @@
           ]
         ],
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 29,
       "group": "하반기",
       "name": "페이센터 알람발송 기능 구현 phase 3",
-      "owner": "이영민",
+      "owner": "표재홍",
       "status": "green",
       "target": "2026 연내",
       "memo": "",
@@ -1132,15 +1110,13 @@
           ]
         ],
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 30,
       "group": "하반기",
       "name": "배송 시뮬레이터 연동 phase 3",
-      "owner": "이창화",
+      "owner": "표재홍",
       "status": "green",
       "target": "2026 연내",
       "memo": "",
@@ -1150,9 +1126,7 @@
         "design": null,
         "dev": null,
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 31,
@@ -1168,15 +1142,13 @@
         "design": null,
         "dev": null,
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     },
     {
       "id": 32,
       "group": "하반기",
       "name": "C1 선물하기",
-      "owner": "미정",
+      "owner": "이애린",
       "status": "green",
       "target": "2026 연내",
       "memo": "",
@@ -1195,9 +1167,7 @@
         "design": null,
         "dev": null,
         "open": null
-      },
-      "scheduleNote": "",
-      "scheduleNotes": {}
+      }
     }
   ]
 }
