@@ -223,7 +223,7 @@
         <span class="li"><span class="pchip" style="background:var(--ph-design-bg);color:var(--ph-design)">디자인</span></span>
         <span class="li"><span class="pchip" style="background:var(--ph-dev-bg);color:var(--ph-dev)">개발</span></span>
         <span class="li"><span class="pchip" style="background:var(--ph-open-bg);color:var(--ph-open)">배포</span></span>
-        <span style="font-size:11px;color:var(--red);margin-left:6px">│ 오늘(4/10)</span>
+        <span style="font-size:11px;color:var(--red);margin-left:6px" id="today-label">│ 오늘</span>
       </div>
       <div class="tlw" id="tl-content"></div>
     </div>
@@ -453,7 +453,7 @@ function renderList(){
               ondragleave="onDragLeave(event)"
               ondrop="onDrop(event)"
               ondragend="onDragEnd(event)"
-              style="position:relative;z-index:${t.status==='gray'?20:1}">
+              style="position:relative;z-index:${t.status==='gray'?999:1}">
             <td style="padding:6px 8px">
               <div style="display:flex;align-items:center;gap:6px">
                 <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
@@ -556,6 +556,8 @@ function renderList(){
 function renderTimeline(){
   fillOwners();
   const TODAY = getTODAY();
+  const todayLabel = document.getElementById('today-label');
+  if(todayLabel) todayLabel.textContent = `│ 오늘(${TODAY.m}/${TODAY.d})`;
   const oF=document.getElementById('tl-owner').value,gF=document.getElementById('tl-group').value;
   const groups=gF?[gF]:['사업기획','서비스기획','하반기'];
   const todayIdx=moIdx(TODAY.y,TODAY.m); // 오늘이 속한 월 인덱스
@@ -716,7 +718,7 @@ function saveName(tid, val){
 function openStatusDd(e, tid){
   e.stopPropagation();
   // 다른 드롭다운 모두 닫기
-  document.querySelectorAll('.status-dd.open, .phase-dropdown.open').forEach(d=>d.classList.remove('open'));
+  closeAllDropdowns();
   const dd = document.getElementById('sdd-'+tid);
   if(dd) dd.classList.add('open');
 }
