@@ -132,6 +132,20 @@
   tr.drag-over-bottom td{border-bottom:2px solid var(--accent) !important}
   .owner-edit:hover{background:var(--blue-bg) !important;cursor:text}
   .owner-edit:focus{background:var(--blue-bg) !important;box-shadow:0 0 0 2px rgba(37,99,235,.25);border-radius:12px}
+  /* 담당자 드롭다운 */
+  .owner-wrap{position:relative;display:inline-block}
+  .owner-btn{display:inline-flex;align-items:center;font-size:11px;padding:3px 9px;border-radius:20px;background:var(--blue-bg);color:var(--blue);font-weight:500;white-space:nowrap;cursor:pointer;border:none;font-family:'Noto Sans KR',sans-serif;transition:opacity .15s}
+  .owner-btn:hover{opacity:.8}
+  .owner-dd{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:50;padding:6px;min-width:130px}
+  .owner-dd.open{display:block}
+  .owner-opt{display:flex;align-items:center;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;border:none;background:none;width:100%;font-family:'Noto Sans KR',sans-serif;text-align:left;color:var(--text1)}
+  .owner-opt:hover{background:var(--surface2)}
+  .owner-opt.selected{color:var(--blue);font-weight:600}
+  .owner-add-row{display:flex;gap:4px;padding:6px 6px 2px;border-top:1px solid var(--border);margin-top:4px}
+  .owner-add-input{flex:1;font-size:11px;font-family:'Noto Sans KR',sans-serif;padding:4px 7px;border:1px solid var(--border2);border-radius:5px;outline:none;color:var(--text1)}
+  .owner-add-input:focus{border-color:var(--accent)}
+  .owner-add-btn{font-size:11px;font-family:'Noto Sans KR',sans-serif;font-weight:600;padding:4px 8px;border-radius:5px;border:none;cursor:pointer;background:var(--accent);color:#fff;white-space:nowrap}
+  .owner-add-btn:hover{opacity:.85}
   @media(max-width:900px){.sg{grid-template-columns:repeat(3,1fr)}.main{padding:16px}}
   @media(max-width:600px){.sg{grid-template-columns:repeat(2,1fr)}.header{padding:0 16px}}
 </style>
@@ -243,7 +257,11 @@ const PCFG=[
 let tasks = []; // data.json에서 로드
 
 // ── 헬퍼 ──────────────────────────────────────────────────
-function getOwners(){return [...new Set(tasks.map(t=>t.owner))].sort();}
+let customOwners = [];
+function getOwners(){
+  const fromTasks = tasks.map(t=>t.owner).filter(Boolean);
+  return [...new Set([...fromTasks, ...customOwners])].sort();
+}
 function fillOwners(){
   ['f-owner','tl-owner'].forEach(id=>{
     const s=document.getElementById(id);if(!s)return;
@@ -331,7 +349,7 @@ function openPhaseEdit(e, tid, key){
   dd.classList.add('open');
 }
 
-function closeAllDropdowns(){document.querySelectorAll('.phase-dropdown.open').forEach(d=>d.classList.remove('open'));}
+function closeAllDropdowns(){document.querySelectorAll('.phase-dropdown.open, .status-dd.open, .owner-dd.open').forEach(d=>d.classList.remove('open'));}
 // 드롭다운 내부 클릭 시에는 닫히지 않도록 - 외부 클릭 시에만 닫기
 document.addEventListener('click', function(e){
   if(!e.target.closest('.phase-edit-wrap') && !e.target.closest('.target-edit-wrap')){
@@ -456,7 +474,22 @@ function renderList(){
                 ondragstart="event.stopPropagation()"
                 onkeydown="if(event.key==='Enter') this.blur()">
             </td>
-            <td><span class="ot">${t.owner}</span></td>
+            <td style="padding:6px 8px">
+              <div class="owner-wrap">
+                <button class="owner-btn" onclick="openOwnerDd(event,${t.id})">${t.owner}</button>
+                <div class="owner-dd" id="odd-${t.id}">
+                  <div style="max-height:160px;overflow-y:auto">
+                    ${getOwners().map(o=>`<button class="owner-opt${o===t.owner?' selected':''}" onclick="event.stopPropagation();setOwner(${t.id},'${o.replace(/'/g,"\\'")}')">${ o}</button>`).join('')}
+                  </div>
+                  <div class="owner-add-row">
+                    <input class="owner-add-input" id="owner-new-input-${t.id}" type="text" placeholder="새 담당자"
+                      onclick="event.stopPropagation()"
+                      onkeydown="if(event.key==='Enter'){event.stopPropagation();addOwnerAndSet(${t.id})}">
+                    <button class="owner-add-btn" onclick="event.stopPropagation();addOwnerAndSet(${t.id})">추가</button>
+                  </div>
+                </div>
+              </div>
+            </td>
             <td style="text-align:center">
               <div class="target-edit-wrap" style="display:inline-block;position:relative">
                 <button class="sb s-${t.status}" style="cursor:pointer;border:none;font-family:'Noto Sans KR',sans-serif"
@@ -599,6 +632,35 @@ function renderTimeline(){
 
   document.getElementById('tl-content').innerHTML=
     `<table class="tlt"><thead>${yrH}${moH}</thead><tbody>${body}</tbody></table>`;
+}
+
+// ── 담당자 드롭다운 ─────────────────────────────────────────
+function openOwnerDd(e, tid){
+  e.stopPropagation();
+  document.querySelectorAll('.owner-dd.open, .status-dd.open, .phase-dropdown.open').forEach(d=>d.classList.remove('open'));
+  const dd = document.getElementById('odd-'+tid);
+  if(dd) dd.classList.add('open');
+}
+
+function setOwner(tid, owner){
+  const t = tasks.find(x=>x.id===tid);
+  if(!t) return;
+  t.owner = owner;
+  document.querySelectorAll('.owner-dd.open').forEach(d=>d.classList.remove('open'));
+  fillOwners();
+  renderList();
+  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+}
+
+function addOwnerAndSet(tid){
+  const inp = document.getElementById('owner-new-input-'+tid);
+  if(!inp) return;
+  const name = inp.value.trim();
+  if(!name) return;
+  if(!customOwners.includes(name) && !tasks.some(t=>t.owner===name)){
+    customOwners.push(name);
+  }
+  setOwner(tid, name);
 }
 
 // ── 비고 수정 ─────────────────────────────────────────────────
