@@ -631,7 +631,16 @@
       "memo": "",
       "openDate": "",
       "phases": {
-        "plan": null,
+        "plan": [
+          [
+            2025,
+            9
+          ],
+          [
+            2026,
+            4
+          ]
+        ],
         "design": null,
         "dev": [
           [
@@ -640,7 +649,7 @@
           ],
           [
             2026,
-            2
+            4
           ]
         ],
         "open": null
