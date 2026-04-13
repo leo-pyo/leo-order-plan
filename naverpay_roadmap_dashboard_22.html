@@ -370,8 +370,32 @@ function setActiveDropdownRow(tid){
   if(row) row.classList.add('dropdown-active');
 }
 
+const dropdownOriginMap = new WeakMap();
+
+function mountDropdownPortal(dd){
+  if(!dd || dd.parentElement === document.body) return;
+  dropdownOriginMap.set(dd, { parent: dd.parentElement, next: dd.nextSibling });
+  document.body.appendChild(dd);
+}
+
+function restoreDropdownPortal(dd){
+  const origin = dropdownOriginMap.get(dd);
+  if(!origin) return;
+  if(origin.parent && origin.parent.isConnected){
+    if(origin.next && origin.next.parentNode === origin.parent){
+      origin.parent.insertBefore(dd, origin.next);
+    }else{
+      origin.parent.appendChild(dd);
+    }
+  }else{
+    dd.remove();
+  }
+  dropdownOriginMap.delete(dd);
+}
+
 function openDropdownFloating(dd, triggerEl){
   if(!dd || !triggerEl) return;
+  mountDropdownPortal(dd);
   dd.classList.add('open');
   dd.style.position = 'fixed';
   dd.style.zIndex = '2147483647';
@@ -401,6 +425,7 @@ function closeAllDropdowns(){
     d.style.left = '';
     d.style.top = '';
     d.style.zIndex = '';
+    restoreDropdownPortal(d);
   });
   clearActiveDropdownRows();
 }
@@ -410,7 +435,10 @@ document.addEventListener('click', function(e){
     !e.target.closest('.phase-edit-wrap') &&
     !e.target.closest('.target-edit-wrap') &&
     !e.target.closest('.status-wrap') &&
-    !e.target.closest('.owner-wrap')
+    !e.target.closest('.owner-wrap') &&
+    !e.target.closest('.phase-dropdown') &&
+    !e.target.closest('.status-dd') &&
+    !e.target.closest('.owner-dd')
   ){
     closeAllDropdowns();
   }
@@ -444,6 +472,7 @@ function isDoneGroup(group){return group==='완료';}
 
 // ── 목록 렌더 ────────────────────────────────────────────
 function renderList(){
+  closeAllDropdowns();
   fillOwners();
   const oF=document.getElementById('f-owner').value,sF=document.getElementById('f-status').value,
         gF=document.getElementById('f-group').value,q=document.getElementById('f-search').value.toLowerCase();
