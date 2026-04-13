@@ -136,16 +136,18 @@
   .owner-wrap{position:relative;display:inline-block}
   .owner-btn{display:inline-flex;align-items:center;font-size:11px;padding:3px 9px;border-radius:20px;background:var(--blue-bg);color:var(--blue);font-weight:500;white-space:nowrap;cursor:pointer;border:none;font-family:'Noto Sans KR',sans-serif;transition:opacity .15s}
   .owner-btn:hover{opacity:.8}
-  .owner-dd{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:50;padding:6px;min-width:130px}
+  .owner-dd{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:1000;padding:6px;min-width:150px}
   .owner-dd.open{display:block}
-  .owner-opt{display:flex;align-items:center;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;border:none;background:none;width:100%;font-family:'Noto Sans KR',sans-serif;text-align:left;color:var(--text1)}
-  .owner-opt:hover{background:var(--surface2)}
-  .owner-opt.selected{color:var(--blue);font-weight:600}
+  .owner-list{max-height:200px;overflow-y:auto}
+  .owner-list-row{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:6px;font-size:12px;font-weight:500;color:var(--text1)}
+  .owner-list-row:hover{background:var(--surface2)}
+  .owner-list-row.selected{color:var(--blue);font-weight:600}
+  .owner-edit-btn{font-size:10px;padding:2px 6px;border:none;background:var(--border);color:var(--text2);border-radius:4px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;opacity:0;transition:opacity .15s}
+  .owner-list-row:hover .owner-edit-btn{opacity:1}
   .owner-add-row{display:flex;gap:4px;padding:6px 6px 2px;border-top:1px solid var(--border);margin-top:4px}
   .owner-add-input{flex:1;font-size:11px;font-family:'Noto Sans KR',sans-serif;padding:4px 7px;border:1px solid var(--border2);border-radius:5px;outline:none;color:var(--text1)}
   .owner-add-input:focus{border-color:var(--accent)}
   .owner-add-btn{font-size:11px;font-family:'Noto Sans KR',sans-serif;font-weight:600;padding:4px 8px;border-radius:5px;border:none;cursor:pointer;background:var(--accent);color:#fff;white-space:nowrap}
-  .owner-add-btn:hover{opacity:.85}
   @media(max-width:900px){.sg{grid-template-columns:repeat(3,1fr)}.main{padding:16px}}
   @media(max-width:600px){.sg{grid-template-columns:repeat(2,1fr)}.header{padding:0 16px}}
 </style>
@@ -237,7 +239,12 @@ const MONTHS=[];
 for(let m=9;m<=12;m++) MONTHS.push({y:2025,m});
 for(let m=1;m<=12;m++) MONTHS.push({y:2026,m});
 
-const TODAY={y:2026,m:4,d:10};
+// 오늘 날짜 (서버 기준으로 동적 계산)
+function getTODAY(){
+  const now = new Date();
+  return {y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate()};
+}
+
 function moIdx(y,m){return MONTHS.findIndex(x=>x.y===y&&x.m===m);}
 
 // 단계 설정: row0 = 윗줄, row1 = 아랫줄
@@ -544,6 +551,7 @@ function renderList(){
 // ── 타임라인 렌더 ─────────────────────────────────────────
 function renderTimeline(){
   fillOwners();
+  const TODAY = getTODAY();
   const oF=document.getElementById('tl-owner').value,gF=document.getElementById('tl-group').value;
   const groups=gF?[gF]:['사업기획','서비스기획','하반기'];
   const todayIdx=moIdx(TODAY.y,TODAY.m); // 오늘이 속한 월 인덱스
@@ -661,6 +669,25 @@ function addOwnerAndSet(tid){
     customOwners.push(name);
   }
   setOwner(tid, name);
+}
+
+function editOwnerName(oldName){
+  const newName = prompt(`담당자 이름 수정\n현재: ${oldName}`, oldName);
+  if(!newName || newName.trim() === oldName) return;
+  const trimmed = newName.trim();
+  
+  // 모든 과제의 담당자 업데이트
+  tasks.forEach(t=>{
+    if(t.owner === oldName) t.owner = trimmed;
+  });
+  
+  // customOwners 업데이트
+  const idx = customOwners.indexOf(oldName);
+  if(idx !== -1) customOwners[idx] = trimmed;
+  
+  fillOwners();
+  renderList();
+  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
 }
 
 // ── 비고 수정 ─────────────────────────────────────────────────
