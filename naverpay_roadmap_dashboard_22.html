@@ -1173,7 +1173,7 @@ function buildDataPayload(){
   return {tasks: tasks.map(t=>({
     id:t.id, group:t.group, name:t.name, owner:t.owner,
     status:t.status, target:t.target, memo:t.memo,
-    openDate:t.openDate||'', phases:t.phases,
+    openDate:t.openDate||'', phases: JSON.stringify(t.phases),
     scheduleNote:t.scheduleNote||'',
     scheduleNotes:t.scheduleNotes||{}
   }))};
@@ -1267,7 +1267,10 @@ async function initializeData(){
       selected = await loadFromDataJson();
     }
 
-    tasks = selected.tasks;
+    tasks = selected.tasks.map(t=>({
+      ...t,
+      phases: typeof t.phases === 'string' ? JSON.parse(t.phases) : t.phases
+    }));
     lastLocalSnapshot = JSON.stringify(buildDataPayload());
     saveLocalCache(selected);
     renderSummary(); fillOwners(); renderList(); renderMonthlyProgress();
