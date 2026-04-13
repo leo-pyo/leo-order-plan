@@ -445,7 +445,7 @@
       "group": "서비스기획",
       "name": "C1 전시 지면 구축 phase 1",
       "owner": "이가원",
-      "status": "yellow",
+      "status": "green",
       "target": "2026.04",
       "memo": "4/15 오픈 목표",
       "openDate": "4/15",
@@ -453,11 +453,11 @@
         "plan": [
           [
             2025,
-            10
+            9
           ],
           [
-            2025,
-            11
+            2026,
+            1
           ]
         ],
         "design": [
