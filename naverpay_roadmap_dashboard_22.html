@@ -356,7 +356,7 @@ function openPhaseEdit(e, tid, key){
       </div>`;
     btn.parentElement.appendChild(dd);
   }
-  dd.classList.add('open');
+  openDropdownFloating(dd, btn);
 }
 
 function clearActiveDropdownRows(){
@@ -369,17 +369,49 @@ function setActiveDropdownRow(tid){
   if(row) row.classList.add('dropdown-active');
 }
 
+function openDropdownFloating(dd, triggerEl){
+  if(!dd || !triggerEl) return;
+  dd.classList.add('open');
+  dd.style.position = 'fixed';
+  dd.style.zIndex = '2147483647';
+
+  const rect = triggerEl.getBoundingClientRect();
+  const margin = 8;
+  let left = rect.left;
+  let top = rect.bottom + 4;
+
+  const dw = dd.offsetWidth;
+  const dh = dd.offsetHeight;
+  if(left + dw > window.innerWidth - margin){
+    left = Math.max(margin, window.innerWidth - dw - margin);
+  }
+  if(top + dh > window.innerHeight - margin){
+    top = Math.max(margin, rect.top - dh - 4);
+  }
+
+  dd.style.left = `${Math.round(left)}px`;
+  dd.style.top = `${Math.round(top)}px`;
+}
+
 function closeAllDropdowns(){
-  document.querySelectorAll('.phase-dropdown.open, .status-dd.open, .owner-dd.open').forEach(d=>d.classList.remove('open'));
+  document.querySelectorAll('.phase-dropdown, .status-dd, .owner-dd').forEach(d=>{
+    d.classList.remove('open');
+    d.style.position = '';
+    d.style.left = '';
+    d.style.top = '';
+    d.style.zIndex = '';
+  });
   clearActiveDropdownRows();
 }
 // 드롭다운 내부 클릭 시에는 닫히지 않도록 - 외부 클릭 시에만 닫기
 document.addEventListener('click', function(e){
-  if(!e.target.closest('.phase-edit-wrap') && !e.target.closest('.target-edit-wrap')){
+  if(
+    !e.target.closest('.phase-edit-wrap') &&
+    !e.target.closest('.target-edit-wrap') &&
+    !e.target.closest('.status-wrap') &&
+    !e.target.closest('.owner-wrap')
+  ){
     closeAllDropdowns();
-  }
-  if(!e.target.closest('.status-wrap')){
-    document.querySelectorAll('.status-dd.open').forEach(d=>d.classList.remove('open'));
   }
 });
 
@@ -670,7 +702,7 @@ function openOwnerDd(e, tid){
   closeAllDropdowns();
   setActiveDropdownRow(tid);
   const dd = document.getElementById('odd-'+tid);
-  if(dd) dd.classList.add('open');
+  if(dd) openDropdownFloating(dd, e.currentTarget);
 }
 
 function setOwner(tid, owner){
@@ -737,7 +769,7 @@ function openStatusDd(e, tid){
   closeAllDropdowns();
   setActiveDropdownRow(tid);
   const dd = document.getElementById('sdd-'+tid);
-  if(dd) dd.classList.add('open');
+  if(dd) openDropdownFloating(dd, e.currentTarget);
 }
 
 function setStatus(tid, status){
@@ -765,7 +797,7 @@ function openTargetEdit(e, tid){
   setActiveDropdownRow(tid);
   const dd=document.getElementById('tgt-dd-'+tid);
   if(dd){
-    dd.classList.add('open');
+    openDropdownFloating(dd, e.currentTarget);
     setTimeout(()=>{
       const inp=document.getElementById('tgt-input-'+tid);
       if(inp){inp.focus();inp.select();}
