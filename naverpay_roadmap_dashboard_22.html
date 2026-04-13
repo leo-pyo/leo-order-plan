@@ -146,8 +146,11 @@
   .owner-opt:hover{background:var(--surface2)}
   .owner-opt.selected{color:var(--blue);font-weight:600}
   .owner-opt-text{flex:1}
+  .owner-opt-actions{display:inline-flex;align-items:center;gap:2px}
   .owner-opt-edit{font-size:12px;opacity:0;transition:opacity .15s;cursor:pointer;padding:2px 4px;border:none;background:none;color:var(--text2)}
+  .owner-opt-del{font-size:12px;opacity:0;transition:opacity .15s;cursor:pointer;padding:2px 4px;border:none;background:none;color:var(--red)}
   .owner-opt:hover .owner-opt-edit{opacity:1}
+  .owner-opt:hover .owner-opt-del{opacity:1}
   .owner-add-row{display:flex;gap:4px;padding:6px 6px 2px;border-top:1px solid var(--border);margin-top:4px}
   .owner-add-input{flex:1;font-size:11px;font-family:'Noto Sans KR',sans-serif;padding:4px 7px;border:1px solid var(--border2);border-radius:5px;outline:none;color:var(--text1)}
   .owner-add-input:focus{border-color:var(--accent)}
@@ -373,6 +376,7 @@ function setActiveDropdownRow(tid){
 
 const dropdownOriginMap = new WeakMap();
 let dropdownLayer = null;
+let activeFloatingDropdown = null;
 
 function getDropdownLayer(){
   if(dropdownLayer && dropdownLayer.isConnected) return dropdownLayer;
@@ -428,7 +432,17 @@ function openDropdownFloating(dd, triggerEl){
 
   dd.style.left = `${Math.round(left)}px`;
   dd.style.top = `${Math.round(top)}px`;
+  dd.dataset.fixedLeft = dd.style.left;
+  dd.dataset.fixedTop = dd.style.top;
+  activeFloatingDropdown = dd;
 }
+
+window.addEventListener('scroll', ()=>{
+  if(activeFloatingDropdown && activeFloatingDropdown.classList.contains('open')){
+    if(activeFloatingDropdown.dataset.fixedLeft) activeFloatingDropdown.style.left = activeFloatingDropdown.dataset.fixedLeft;
+    if(activeFloatingDropdown.dataset.fixedTop) activeFloatingDropdown.style.top = activeFloatingDropdown.dataset.fixedTop;
+  }
+}, true);
 
 function closeAllDropdowns(){
   document.querySelectorAll('.phase-dropdown, .status-dd, .owner-dd').forEach(d=>{
@@ -438,8 +452,11 @@ function closeAllDropdowns(){
     d.style.top = '';
     d.style.zIndex = '';
     d.style.pointerEvents = '';
+    delete d.dataset.fixedLeft;
+    delete d.dataset.fixedTop;
     restoreDropdownPortal(d);
   });
+  activeFloatingDropdown = null;
   clearActiveDropdownRows();
 }
 // 드롭다운 내부 클릭 시에는 닫히지 않도록 - 외부 클릭 시에만 닫기
@@ -575,12 +592,15 @@ function renderList(){
             </td>
             <td style="padding:6px 8px;position:relative;z-index:10">
               <div class="owner-wrap">
-                <button class="owner-btn" onclick="openOwnerDd(event,${t.id})">${t.owner}</button>
+                <button class="owner-btn" onclick="openOwnerDd(event,${t.id})">${t.owner||'미정'}</button>
                 <div class="owner-dd" id="odd-${t.id}">
                   <div style="max-height:160px;overflow-y:auto">
                     ${getOwners().map(o=>`<div class="owner-opt${o===t.owner?' selected':''}" onclick="event.stopPropagation();setOwner(${t.id},'${o.replace(/'/g,"\\'")}')" style="cursor:pointer">
                       <span class="owner-opt-text">${o}</span>
-                      <button class="owner-opt-edit" onclick="event.stopPropagation();editOwnerName('${o.replace(/'/g,"\\'")}')" title="담당자 이름 수정">✏️</button>
+                      <span class="owner-opt-actions">
+                        <button class="owner-opt-edit" onclick="event.stopPropagation();editOwnerName('${o.replace(/'/g,"\\'")}')" title="담당자 이름 수정">✏️</button>
+                        <button class="owner-opt-del" onclick="event.stopPropagation();deleteOwnerName('${o.replace(/'/g,"\\'")}')" title="담당자 이름 삭제">✕</button>
+                      </span>
                     </div>`).join('')}
                   </div>
                   <div class="owner-add-row">
@@ -751,7 +771,7 @@ function openOwnerDd(e, tid){
 function setOwner(tid, owner){
   const t = tasks.find(x=>x.id===tid);
   if(!t) return;
-  t.owner = owner;
+  t.owner = (owner||'').trim() || '미정';
   document.querySelectorAll('.owner-dd.open').forEach(d=>d.classList.remove('open'));
   fillOwners();
   renderList();
@@ -770,6 +790,7 @@ function addOwnerAndSet(tid){
 }
 
 function editOwnerName(oldName){
+  if(oldName === '미정') return;
   const newName = prompt(`담당자 이름 수정\n현재: ${oldName}`, oldName);
   if(!newName || newName.trim() === oldName) return;
   const trimmed = newName.trim();
@@ -783,6 +804,17 @@ function editOwnerName(oldName){
   const idx = customOwners.indexOf(oldName);
   if(idx !== -1) customOwners[idx] = trimmed;
   
+  fillOwners();
+  renderList();
+  if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
+}
+
+function deleteOwnerName(name){
+  if(!name || name === '미정') return;
+  tasks.forEach(t=>{
+    if(t.owner === name) t.owner = '미정';
+  });
+  customOwners = customOwners.filter(o=>o !== name);
   fillOwners();
   renderList();
   if(document.getElementById('tab-timeline').style.display!=='none') renderTimeline();
