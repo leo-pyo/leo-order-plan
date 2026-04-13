@@ -622,7 +622,7 @@
       "status": "red",
       "target": "2026.06",
       "memo": "",
-      "openDate": "",
+      "openDate": "6/10",
       "phases": {
         "plan": [
           [
@@ -651,10 +651,19 @@
           ],
           [
             2026,
-            4
+            5
           ]
         ],
-        "open": null
+        "open": [
+          [
+            2026,
+            6
+          ],
+          [
+            2026,
+            6
+          ]
+        ]
       },
       "scheduleNote": "",
       "scheduleNotes": {}
