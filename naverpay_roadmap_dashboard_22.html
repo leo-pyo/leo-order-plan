@@ -191,6 +191,12 @@
   .schedule-save-btn{font-size:11px;font-family:'Noto Sans KR',sans-serif;font-weight:600;padding:5px 14px;border-radius:6px;border:none;cursor:pointer;background:var(--accent);color:#fff;white-space:nowrap;transition:background .15s,color .15s}
   .schedule-save-btn:hover{opacity:.85}
   .schedule-save-btn.saved{background:var(--green-bg);color:var(--green)}
+  .add-task-row td{padding:0 !important;border-bottom:none !important}
+  .add-task-trigger{position:relative;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .add-task-trigger::before{content:'';position:absolute;left:16px;right:16px;top:50%;height:1px;background:var(--border2);transform:translateY(-50%)}
+  .add-task-plus{position:relative;z-index:1;width:20px;height:20px;border-radius:50%;border:1px solid var(--border2);background:var(--surface);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;opacity:0;transition:opacity .15s,transform .15s,background .15s}
+  .add-task-row:hover .add-task-plus{opacity:1}
+  .add-task-trigger:hover .add-task-plus{transform:scale(1.06);background:var(--green-bg)}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -555,6 +561,39 @@ function clearPhase(tid, key){
 // 완료 그룹인지 판단
 function isDoneGroup(group){return group==='완료';}
 
+let pendingFocusTaskId = null;
+
+function addTaskToGroupEnd(group){
+  const nextId = tasks.reduce((maxId, task)=>Math.max(maxId, Number(task.id) || 0), 0) + 1;
+  const newTask = {
+    id: nextId,
+    group,
+    name: '',
+    owner: '미정',
+    status: 'green',
+    target: '미정',
+    memo: '',
+    openDate: '',
+    phases: {},
+    scheduleNote: '',
+    scheduleNotes: {}
+  };
+
+  let insertAt = tasks.length;
+  for(let i = tasks.length - 1; i >= 0; i--){
+    if(tasks[i].group === group){
+      insertAt = i + 1;
+      break;
+    }
+  }
+
+  tasks.splice(insertAt, 0, newTask);
+  pendingFocusTaskId = nextId;
+  renderSummary();
+  renderList();
+  refreshOpenTabs();
+}
+
 // ── 목록 렌더 ────────────────────────────────────────────
 function renderList(){
   closeAllDropdowns();
@@ -711,6 +750,13 @@ function renderList(){
                 onkeydown="if(event.key==='Enter') this.blur()"></td>
           </tr>`;
         }).join('')}
+        ${g==='하반기' ? `<tr class="add-task-row">
+          <td colspan="10">
+            <div class="add-task-trigger" onclick="addTaskToGroupEnd('하반기')" title="새 과제 추가">
+              <span class="add-task-plus">+</span>
+            </div>
+          </td>
+        </tr>` : ''}
         </tbody>
       </table>
       </div>
@@ -718,6 +764,13 @@ function renderList(){
   });
   if(!html)html='<div class="empty">조건에 맞는 과제가 없습니다.</div>';
   document.getElementById('list-content').innerHTML=html;
+  if(pendingFocusTaskId!==null){
+    const input = document.querySelector(`.tn[data-id="${pendingFocusTaskId}"]`);
+    if(input){
+      setTimeout(()=>{ input.focus(); input.select(); }, 0);
+    }
+    pendingFocusTaskId = null;
+  }
 }
 
 // ── 타임라인 렌더 ─────────────────────────────────────────
