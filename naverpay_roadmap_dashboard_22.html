@@ -304,7 +304,12 @@ const MONTHS=[];
 for(let m=9;m<=12;m++) MONTHS.push({y:2025,m});
 for(let m=1;m<=12;m++) MONTHS.push({y:2026,m});
 const SCHEDULE_MONTHS=Array.from({length:12},(_,i)=>({y:2026,m:i+1,key:`2026-${String(i+1).padStart(2,'0')}`,label:`26년 ${i+1}월`}));
-let activeScheduleMonthKey='2026-01';
+const initialScheduleMonthKey = (()=>{
+  const now = new Date();
+  const key = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  return SCHEDULE_MONTHS.some(x=>x.key===key) ? key : SCHEDULE_MONTHS[0].key;
+})();
+let activeScheduleMonthKey=initialScheduleMonthKey;
 
 // 오늘 날짜 (서버 기준으로 동적 계산)
 function getTODAY(){
