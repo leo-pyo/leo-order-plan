@@ -191,6 +191,13 @@
   .schedule-save-btn{font-size:11px;font-family:'Noto Sans KR',sans-serif;font-weight:600;padding:5px 14px;border-radius:6px;border:none;cursor:pointer;background:var(--accent);color:#fff;white-space:nowrap;transition:background .15s,color .15s}
   .schedule-save-btn:hover{opacity:.85}
   .schedule-save-btn.saved{background:var(--green-bg);color:var(--green)}
+  .task-del-btn{width:18px;height:18px;border-radius:50%;border:none;background:transparent;color:var(--text3);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s,color .15s;flex-shrink:0}
+  .task-del-btn:hover{background:var(--red-bg);color:var(--red)}
+  .undo-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(12px);display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:rgba(17,24,39,.94);color:#fff;box-shadow:0 12px 30px rgba(15,23,42,.24);z-index:2147483647;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+  .undo-toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+  .undo-toast-text{font-size:12px;font-weight:500;white-space:nowrap}
+  .undo-toast-btn{border:none;background:#fff;color:#111827;font-size:12px;font-weight:700;border-radius:999px;padding:6px 10px;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+  .undo-toast-btn:hover{background:#dcfce7;color:#166534}
   .add-task-row td{padding:0 !important;border-bottom:none !important}
   .add-task-trigger{position:relative;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer}
   .add-task-trigger::before{content:'';position:absolute;left:16px;right:16px;top:50%;height:1px;background:var(--border2);transform:translateY(-50%)}
@@ -562,6 +569,40 @@ function clearPhase(tid, key){
 function isDoneGroup(group){return group==='완료';}
 
 let pendingFocusTaskId = null;
+let lastDeletedTask = null;
+let undoDeleteTimer = null;
+
+function getUndoToast(){
+  let toast = document.getElementById('undo-toast');
+  if(toast) return toast;
+  toast = document.createElement('div');
+  toast.id = 'undo-toast';
+  toast.className = 'undo-toast';
+  toast.innerHTML = '<span class="undo-toast-text">과제가 삭제되었습니다.</span><button class="undo-toast-btn" onclick="undoDeleteTask()">되돌리기</button>';
+  document.body.appendChild(toast);
+  return toast;
+}
+
+function hideUndoToast(){
+  const toast = document.getElementById('undo-toast');
+  if(toast) toast.classList.remove('show');
+  if(undoDeleteTimer){
+    clearTimeout(undoDeleteTimer);
+    undoDeleteTimer = null;
+  }
+}
+
+function showUndoToast(taskName){
+  const toast = getUndoToast();
+  const textEl = toast.querySelector('.undo-toast-text');
+  if(textEl) textEl.textContent = `${taskName || '과제'}가 삭제되었습니다.`;
+  toast.classList.add('show');
+  if(undoDeleteTimer) clearTimeout(undoDeleteTimer);
+  undoDeleteTimer = setTimeout(()=>{
+    hideUndoToast();
+    lastDeletedTask = null;
+  }, 5000);
+}
 
 function addTaskToGroupEnd(group){
   const nextId = tasks.reduce((maxId, task)=>Math.max(maxId, Number(task.id) || 0), 0) + 1;
@@ -589,6 +630,32 @@ function addTaskToGroupEnd(group){
 
   tasks.splice(insertAt, 0, newTask);
   pendingFocusTaskId = nextId;
+  renderSummary();
+  renderList();
+  refreshOpenTabs();
+}
+
+function deleteTask(tid){
+  const idx = tasks.findIndex(t=>t.id===tid);
+  if(idx < 0) return;
+  const task = tasks[idx];
+  const confirmed = confirm(`'${task.name || '새 과제'}' 과제를 삭제할까요?`);
+  if(!confirmed) return;
+  lastDeletedTask = { task: { ...task }, index: idx };
+  tasks.splice(idx, 1);
+  renderSummary();
+  renderList();
+  refreshOpenTabs();
+  showUndoToast(task.name || '새 과제');
+}
+
+function undoDeleteTask(){
+  if(!lastDeletedTask) return;
+  const { task, index } = lastDeletedTask;
+  const insertAt = Math.max(0, Math.min(index, tasks.length));
+  tasks.splice(insertAt, 0, task);
+  lastDeletedTask = null;
+  hideUndoToast();
   renderSummary();
   renderList();
   refreshOpenTabs();
@@ -659,6 +726,7 @@ function renderList(){
               style="position:relative;z-index:${t.status==='gray'?999:1}">
             <td style="padding:6px 8px">
               <div style="display:flex;align-items:center;gap:6px">
+                <button class="task-del-btn" onclick="event.stopPropagation();deleteTask(${t.id})" title="과제 삭제">✕</button>
                 <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
                 <div class="status-wrap">
                   <button class="status-badge-btn sbb-${t.status}"
