@@ -1346,7 +1346,15 @@ async function exportData(){
 
   setBtn('저장 중...', '#e0f2fe', '#0ea5e9', true);
 
-  const data = buildDataPayload();
+  const data = {
+    tasks: tasks.map(t=>({
+      id:t.id, group:t.group, name:t.name, owner:t.owner,
+      status:t.status, target:t.target, memo:t.memo,
+      openDate:t.openDate||'', phases: JSON.stringify(t.phases),
+      scheduleNote:t.scheduleNote||'',
+      scheduleNotes:t.scheduleNotes||{}
+    }))
+  };
   // 네트워크 결과와 무관하게 우선 로컬에 최신 상태를 보존
   saveLocalCache(data);
   lastLocalSnapshot = JSON.stringify(data);
@@ -1389,10 +1397,11 @@ async function initializeData(){
       selected = await loadFromDataJson();
     }
 
-    tasks = selected.tasks.map(t=>({
-      ...t,
-      phases: typeof t.phases === 'string' ? JSON.parse(t.phases) : t.phases
-    }));
+    const saved = selected.tasks;
+    saved.forEach(t => {
+      if(typeof t.phases === 'string') t.phases = JSON.parse(t.phases);
+      tasks.push(t);
+    });
     lastLocalSnapshot = JSON.stringify(buildDataPayload());
     saveLocalCache(selected);
     renderSummary(); fillOwners(); renderList(); renderMonthlyProgress();
