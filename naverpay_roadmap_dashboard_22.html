@@ -205,8 +205,6 @@
   .add-task-row:hover .add-task-plus{opacity:1}
   .add-task-trigger:hover .add-task-plus{transform:scale(1.06);background:var(--green-bg)}
 </style>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <header class="header">
@@ -1278,18 +1276,9 @@ function onDropGroup(e, targetGroup){
   refreshOpenTabs();
 }
 
-// ── Firebase 저장 설정 ───────────────────────────────────
+// ── API 저장/로드 설정 ───────────────────────────────────
 const LOCAL_CACHE_KEY = 'order_roadmap_data_cache_v1';
-const firebaseConfig = {
-  apiKey: 'AIzaSyA7nnKYTe1HIy-_TlczwxB4TlIt4TWIl5w',
-  authDomain: 'c1-boosting-plan.firebaseapp.com',
-  projectId: 'c1-boosting-plan',
-  storageBucket: 'c1-boosting-plan.firebasestorage.app',
-  messagingSenderId: '769731127066',
-  appId: '1:769731127066:web:30cb586e46c8f3f719aea3'
-};
-if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const API_BASE_URL = 'http://141.164.36.189/api';
 
 function buildDataPayload(){
   return {tasks: tasks.map(t=>({
@@ -1359,12 +1348,18 @@ async function exportData(){
   saveLocalCache(data);
   lastLocalSnapshot = JSON.stringify(data);
   try {
-    await db.collection('roadmap').doc('tasks').set({ tasks: data });
+    const resp = await fetch(`${API_BASE_URL}/tasks`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    await resp.json();
     saveLocalCache(data);
     setBtn('✓ 저장완료', 'var(--green-bg)', 'var(--green)', false);
     setTimeout(()=>setBtn('💾 저장', '', '', false), 2000);
   } catch(e){
-    console.error('Firebase 저장 실패:', e);
+    console.error('API 저장 실패:', e);
     setBtn('⚠️ 저장실패', 'var(--red-bg)', 'var(--red)', false);
     setTimeout(()=>setBtn('💾 저장', '', '', false), 2500);
     alert('저장 실패: ' + e.message);
@@ -1378,22 +1373,24 @@ async function loadFromDataJson(){
   return (data?.tasks && Array.isArray(data.tasks)) ? data : {tasks:[]};
 }
 
-// ── 초기화 (Firebase 우선, 실패 시 data.json fallback) ───────
+// ── 초기화 (API 우선, 실패 시 data.json fallback) ───────
 async function initializeData(){
   try{
     let selected = null;
 
     try{
-      const doc = await db.collection('roadmap').doc('tasks').get();
-      if(!doc.exists) throw new Error('Firebase 문서 없음');
-      const raw = doc.data() || {};
-      const fbPayload = (raw?.tasks?.tasks && Array.isArray(raw.tasks.tasks))
-        ? raw.tasks
-        : ((raw?.tasks && Array.isArray(raw.tasks)) ? {tasks:raw.tasks} : null);
-      if(!fbPayload) throw new Error('Firebase 문서 형식 오류');
-      selected = fbPayload;
-    }catch(fbErr){
-      console.error('Firebase 로드 실패:', fbErr);
+      const resp = await fetch(`${API_BASE_URL}/tasks`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const apiPayload = await resp.json();
+      const parsed = (apiPayload?.tasks && Array.isArray(apiPayload.tasks))
+        ? apiPayload
+        : {tasks:[]};
+      selected = parsed;
+    }catch(apiErr){
+      console.error('API 로드 실패:', apiErr);
       selected = await loadFromDataJson();
     }
 
@@ -1415,7 +1412,7 @@ async function initializeData(){
       return;
     }
     document.getElementById('list-content').innerHTML =
-      '<div class="empty" style="color:var(--red)">⚠️ Firebase/data.json을 불러올 수 없습니다.<br>네트워크 상태를 확인해주세요.</div>';
+      '<div class="empty" style="color:var(--red)">⚠️ API/data.json을 불러올 수 없습니다.<br>네트워크 상태를 확인해주세요.</div>';
   }
 }
 initializeData();
