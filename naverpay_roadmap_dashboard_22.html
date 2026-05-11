@@ -271,7 +271,7 @@
         <span class="fl">필터</span>
         <select id="tl-owner" onchange="renderTimeline()"><option value="">전체 담당자</option></select>
         <select id="tl-group" onchange="renderTimeline()">
-          <option value="">전체 그룹</option><option value="사업기획">사업 기획 과제</option>
+          <option value="">전체 그룹</option><option value="완료">완료</option><option value="사업기획">사업 기획 과제</option>
           <option value="서비스기획">서비스 기획 과제</option><option value="하반기">26년 하반기</option>
         </select>
       </div>
@@ -394,7 +394,7 @@ function phaseLabelHtml(tid, key, p, isDone){
   const txt = phaseText(p);
   const name = PHASE_NAMES[key];
   const cls = isDone ? 'pl-done' : PHASE_CLS[key];
-  const display = isDone ? 'DONE' : (txt || '');
+  const display = txt || '';
   if(!display) return `<button class="phase-label pl-done" style="opacity:.4" onclick="openPhaseEdit(event,${tid},'${key}')">${name}: 미정</button>`;
   return `<button class="phase-label ${cls}" onclick="openPhaseEdit(event,${tid},'${key}')">${display}</button>`;
 }
@@ -717,6 +717,7 @@ function renderList(){
         <tbody>
         ${rows.map(t=>{
           const ph=t.phases||{};
+          const isDoneTask = isDoneGroup(t.group);
           return `<tr class="${t.group==='완료'?'td':''} ${t.status==='gray'?'th2':''}"
               draggable="true"
               data-id="${t.id}"
@@ -780,7 +781,7 @@ function renderList(){
             </td>
             <td style="text-align:center">
               <div class="target-edit-wrap" style="display:inline-block;position:relative">
-                <button class="sb s-${t.status}" style="cursor:pointer;border:none;font-family:'Noto Sans KR',sans-serif"
+                <button class="sb s-${isDoneTask?'gray':t.status}" style="cursor:pointer;border:none;font-family:'Noto Sans KR',sans-serif"
                   onclick="openTargetEdit(event,${t.id})">${t.target||'미정'}</button>
                 <div class="phase-dropdown" id="tgt-dd-${t.id}">
                   <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:8px">목표일정 수정</div>
@@ -801,7 +802,7 @@ function renderList(){
             ${PHASE_KEYS.map(key=>`
               <td class="phase-col">
                 <div class="phase-edit-wrap">
-                  ${phaseLabelHtml(t.id, key, ph[key], isDone)}
+                  ${phaseLabelHtml(t.id, key, ph[key], isDoneTask)}
                 </div>
               </td>`).join('')}
             <td class="phase-col" style="min-width:110px;padding:6px 10px !important">
@@ -851,7 +852,7 @@ function renderTimeline(){
   const todayLabel = document.getElementById('today-label');
   if(todayLabel) todayLabel.textContent = `│ 오늘(${TODAY.m}/${TODAY.d})`;
   const oF=document.getElementById('tl-owner').value,gF=document.getElementById('tl-group').value;
-  const groups=gF?[gF]:['사업기획','서비스기획','하반기'];
+  const groups=gF?[gF]:['완료','사업기획','서비스기획','하반기'];
   const todayIdx=moIdx(TODAY.y,TODAY.m); // 오늘이 속한 월 인덱스
   const todayRatio=TODAY.d/30;           // 해당 월 셀 내 비율
 
@@ -874,6 +875,7 @@ function renderTimeline(){
 
     rows.forEach(t=>{
       const ph=t.phases||{};
+      const isDoneTask = isDoneGroup(t.group);
 
       // 각 단계별 월 인덱스 매핑 (기획/디자인/개발/배포를 독립 바(4줄)로 표시)
       const phaseMaps = {
@@ -901,6 +903,9 @@ function renderTimeline(){
         // 바 세그먼트: 연속 여부에 따라 border-radius 결정
         function seg(cfg, map, i){
           if(!cfg) return `<div class="bar-seg" style="height:9px"></div>`;
+          const paint = isDoneTask
+            ? { bg:'var(--gray-bg)', color:'var(--gray)' }
+            : { bg:cfg.bg, color:cfg.color };
           const prev=i>0?map[i-1]:null;
           const next=i<MONTHS.length-1?map[i+1]:null;
           const isStart=!prev||prev.key!==cfg.key;
@@ -908,8 +913,8 @@ function renderTimeline(){
           const bl=isStart?'4px':'0';
           const br=isEnd?'4px':'0';
           const displayLabel=(cfg.key==='open'&&t.openDate)?t.openDate:cfg.label;
-          const label=isStart?`<span style="color:${cfg.color};font-size:9px;font-weight:600;white-space:nowrap">${displayLabel}</span>`:'';
-          return `<div class="bar-seg" style="height:9px;background:${cfg.bg};border-radius:${bl} ${br} ${br} ${bl}">${label}</div>`;
+          const label=isStart?`<span style="color:${paint.color};font-size:9px;font-weight:600;white-space:nowrap">${displayLabel}</span>`:'';
+          return `<div class="bar-seg" style="height:9px;background:${paint.bg};border-radius:${bl} ${br} ${br} ${bl}">${label}</div>`;
         }
 
         const todayLineHtml=isToday
