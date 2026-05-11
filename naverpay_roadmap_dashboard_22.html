@@ -271,7 +271,7 @@
         <span class="fl">필터</span>
         <select id="tl-owner" onchange="renderTimeline()"><option value="">전체 담당자</option></select>
         <select id="tl-group" onchange="renderTimeline()">
-          <option value="">전체 그룹</option><option value="완료">완료</option><option value="사업기획">사업 기획 과제</option>
+          <option value="">전체 그룹</option><option value="사업기획">사업 기획 과제</option>
           <option value="서비스기획">서비스 기획 과제</option><option value="하반기">26년 하반기</option>
         </select>
       </div>
@@ -852,7 +852,7 @@ function renderTimeline(){
   const todayLabel = document.getElementById('today-label');
   if(todayLabel) todayLabel.textContent = `│ 오늘(${TODAY.m}/${TODAY.d})`;
   const oF=document.getElementById('tl-owner').value,gF=document.getElementById('tl-group').value;
-  const groups=gF?[gF]:['완료','사업기획','서비스기획','하반기'];
+  const groups=gF?[gF]:['사업기획','서비스기획','하반기'];
   const todayIdx=moIdx(TODAY.y,TODAY.m); // 오늘이 속한 월 인덱스
   const todayRatio=TODAY.d/30;           // 해당 월 셀 내 비율
 
