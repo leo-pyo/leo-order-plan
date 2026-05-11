@@ -1284,6 +1284,84 @@ function onDropGroup(e, targetGroup){
 // ── API 저장/로드 설정 ───────────────────────────────────
 const LOCAL_CACHE_KEY = 'order_roadmap_data_cache_v1';
 const API_BASE_URL = 'http://141.164.36.189/api';
+const AUTO_REFRESH_MS = 30000;
+
+let lastServerSnapshot = '';
+
+function toPhaseString(phases){
+  let src = phases;
+  if(typeof src === 'string'){
+    try{ src = JSON.parse(src); }catch(_e){ src = {}; }
+  }
+  src = src || {};
+  const ordered = {
+    plan: src.plan || null,
+    design: src.design || null,
+    dev: src.dev || null,
+    open: src.open || null
+  };
+  return JSON.stringify(ordered);
+}
+
+function normalizePayload(payload){
+  const arr = Array.isArray(payload?.tasks) ? payload.tasks : [];
+  return {
+    tasks: arr.map(t=>({
+      id:t.id, group:t.group, name:t.name, owner:t.owner,
+      status:t.status, target:t.target, memo:t.memo,
+      openDate:t.openDate||'',
+      phases: toPhaseString(t.phases),
+      scheduleNote:t.scheduleNote||'',
+      scheduleNotes:(t.scheduleNotes&&typeof t.scheduleNotes==='object')?t.scheduleNotes:{}
+    }))
+  };
+}
+
+function payloadSnapshot(payload){
+  return JSON.stringify(normalizePayload(payload));
+}
+
+function currentDataPayload(){
+  return normalizePayload(buildDataPayload());
+}
+
+function hasLocalUnsyncedChanges(){
+  if(!lastServerSnapshot) return false;
+  return payloadSnapshot(buildDataPayload()) !== lastServerSnapshot;
+}
+
+function applyPayloadToTasks(payload){
+  const normalized = normalizePayload(payload);
+  tasks = normalized.tasks.map(t=>{
+    let parsedPhases = {};
+    try{ parsedPhases = JSON.parse(t.phases); }catch(_e){ parsedPhases = {}; }
+    return {
+      ...t,
+      phases: parsedPhases
+    };
+  });
+
+  const localPayload = currentDataPayload();
+  lastLocalSnapshot = JSON.stringify(localPayload);
+  lastServerSnapshot = payloadSnapshot(localPayload);
+  saveLocalCache(localPayload);
+
+  renderSummary();
+  fillOwners();
+  renderList();
+  renderMonthlyProgress();
+}
+
+async function fetchApiTasks(){
+  const resp = await fetch(`${API_BASE_URL}/tasks`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    cache: 'no-store'
+  });
+  if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const apiPayload = await resp.json();
+  return (apiPayload?.tasks && Array.isArray(apiPayload.tasks)) ? apiPayload : {tasks:[]};
+}
 
 function buildDataPayload(){
   return {tasks: tasks.map(t=>({
@@ -1340,19 +1418,23 @@ async function exportData(){
 
   setBtn('저장 중...', '#e0f2fe', '#0ea5e9', true);
 
-  const data = {
-    tasks: tasks.map(t=>({
-      id:t.id, group:t.group, name:t.name, owner:t.owner,
-      status:t.status, target:t.target, memo:t.memo,
-      openDate:t.openDate||'', phases: JSON.stringify(t.phases),
-      scheduleNote:t.scheduleNote||'',
-      scheduleNotes:t.scheduleNotes||{}
-    }))
-  };
+  const data = currentDataPayload();
   // 네트워크 결과와 무관하게 우선 로컬에 최신 상태를 보존
   saveLocalCache(data);
   lastLocalSnapshot = JSON.stringify(data);
   try {
+    // 저장 직전 서버 기준 스냅샷과 비교하여 협업 충돌을 감지
+    const latest = await fetchApiTasks();
+    const latestSnapshot = payloadSnapshot(latest);
+    if(lastServerSnapshot && latestSnapshot !== lastServerSnapshot){
+      const overwrite = confirm('다른 팀원이 최근 데이터를 저장했습니다.\n현재 상태로 저장하면 상대 변경분이 덮어써질 수 있습니다.\n그래도 저장할까요?');
+      if(!overwrite){
+        setBtn('저장 취소', 'var(--yellow-bg)', 'var(--yellow)', false);
+        setTimeout(()=>setBtn('💾 저장', '', '', false), 1800);
+        return;
+      }
+    }
+
     const resp = await fetch(`${API_BASE_URL}/tasks`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1360,7 +1442,11 @@ async function exportData(){
     });
     if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
     await resp.json();
-    saveLocalCache(data);
+
+    // 저장 직후 서버 기준으로 재동기화해서 협업 화면 차이를 줄임
+    const fresh = await fetchApiTasks();
+    applyPayloadToTasks(fresh);
+
     setBtn('✓ 저장완료', 'var(--green-bg)', 'var(--green)', false);
     setTimeout(()=>setBtn('💾 저장', '', '', false), 2000);
   } catch(e){
@@ -1384,36 +1470,18 @@ async function initializeData(){
     let selected = null;
 
     try{
-      const resp = await fetch(`${API_BASE_URL}/tasks`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      const apiPayload = await resp.json();
-      const parsed = (apiPayload?.tasks && Array.isArray(apiPayload.tasks))
-        ? apiPayload
-        : {tasks:[]};
-      selected = parsed;
+      selected = await fetchApiTasks();
     }catch(apiErr){
       console.error('API 로드 실패:', apiErr);
       selected = await loadFromDataJson();
     }
 
-    const saved = selected.tasks;
-    saved.forEach(t => {
-      if(typeof t.phases === 'string') t.phases = JSON.parse(t.phases);
-      tasks.push(t);
-    });
-    lastLocalSnapshot = JSON.stringify(buildDataPayload());
-    saveLocalCache(selected);
-    renderSummary(); fillOwners(); renderList(); renderMonthlyProgress();
+    applyPayloadToTasks(selected);
   }catch(err){
     console.error(err);
     const localCache = loadLocalCache();
     if(localCache?.data?.tasks && Array.isArray(localCache.data.tasks)){
-      tasks = localCache.data.tasks;
-      lastLocalSnapshot = JSON.stringify(buildDataPayload());
-      renderSummary(); fillOwners(); renderList(); renderMonthlyProgress();
+      applyPayloadToTasks(localCache.data);
       return;
     }
     document.getElementById('list-content').innerHTML =
@@ -1421,6 +1489,23 @@ async function initializeData(){
   }
 }
 initializeData();
+
+// 협업 환경에서 다른 사용자의 저장본을 주기적으로 반영
+setInterval(async ()=>{
+  try{
+    if(document.hidden) return;
+    const latest = await fetchApiTasks();
+    const latestSnapshot = payloadSnapshot(latest);
+    if(!latestSnapshot || latestSnapshot === lastServerSnapshot) return;
+
+    // 로컬 편집 중이면 자동 덮어쓰기를 피하고 다음 저장 시 충돌 경고로 유도
+    if(hasLocalUnsyncedChanges()) return;
+
+    applyPayloadToTasks(latest);
+  }catch(_e){
+    // 자동 갱신 실패는 사용자 작업을 방해하지 않음
+  }
+}, AUTO_REFRESH_MS);
 
 // 주기적으로 변경사항을 로컬에 스냅샷 저장 (하드 새로고침 대비)
 setInterval(persistLocalIfChanged, 1000);
